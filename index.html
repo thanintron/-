@@ -374,6 +374,116 @@
       color: var(--muted);
     }
 
+    /* Dashboard Overview Section */
+    .dashboard-wrap {
+      max-width: 1180px;
+      width: 100%;
+      margin: var(--space-4) auto 0;
+      padding: 0 var(--space-4);
+    }
+
+    @media (min-width: 920px) {
+      .dashboard-wrap {
+        padding: 0 var(--space-6);
+      }
+    }
+
+    .dashboard-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--space-4);
+    }
+
+    @media (min-width: 640px) {
+      .dashboard-card {
+        padding: var(--space-5);
+      }
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-4);
+    }
+
+    .dashboard-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dashboard-period-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--brand);
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-border);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: var(--space-3);
+    }
+
+    .kpi-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .kpi-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .kpi-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+
+    .kpi-sub {
+      font-size: 0.76rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     /* Main Container & Grid */
     .main-container {
       max-width: 1180px;
@@ -1430,6 +1540,61 @@
     </div>
   </div>
 
+  <!-- Dashboard Overview (Monthly KPI Summary) -->
+  <section class="dashboard-wrap" aria-label="Dashboard Overview">
+    <div class="dashboard-card">
+      <div class="dashboard-header">
+        <h2 class="dashboard-title">
+          <span>📌</span>
+          <span id="uiDashTitle">แดชบอร์ดสรุปภาพรวมการเงิน (Dashboard)</span>
+        </h2>
+        <span class="dashboard-period-badge" id="dashPeriodBadge">-</span>
+      </div>
+
+      <div class="kpi-grid">
+        <!-- KPI 1: Monthly Income -->
+        <div class="kpi-box">
+          <div class="kpi-top">
+            <span id="uiKpiIncomeLabel">รายรับรวมเดือนนี้</span>
+            <span class="kpi-icon" style="background: var(--income-soft); color: var(--income);">💰</span>
+          </div>
+          <div class="kpi-value text-income" id="kpiMonthIncome">฿0.00</div>
+          <div class="kpi-sub" id="kpiMonthIncomeSub">0 รายการรับ</div>
+        </div>
+
+        <!-- KPI 2: Monthly Expense -->
+        <div class="kpi-box">
+          <div class="kpi-top">
+            <span id="uiKpiExpenseLabel">รายจ่ายรวมเดือนนี้</span>
+            <span class="kpi-icon" style="background: var(--expense-soft); color: var(--expense);">💸</span>
+          </div>
+          <div class="kpi-value text-expense" id="kpiMonthExpense">฿0.00</div>
+          <div class="kpi-sub" id="kpiMonthExpenseSub">เฉลี่ยต่อวัน: ฿0.00</div>
+        </div>
+
+        <!-- KPI 3: Net Balance -->
+        <div class="kpi-box">
+          <div class="kpi-top">
+            <span id="uiKpiNetLabel">ยอดคงเหลือสุทธิ (รับ - จ่าย)</span>
+            <span class="kpi-icon" style="background: var(--brand-soft); color: var(--brand);">⚖️</span>
+          </div>
+          <div class="kpi-value" id="kpiNetBalance">฿0.00</div>
+          <div class="kpi-sub" id="kpiNetBalanceSub">สถานะการออมประจำเดือน</div>
+        </div>
+
+        <!-- KPI 4: Daily Frame Discipline -->
+        <div class="kpi-box">
+          <div class="kpi-top">
+            <span id="uiKpiDisciplineLabel">วินัยการใช้จ่ายตามกรอบรายวัน</span>
+            <span class="kpi-icon" style="background: var(--warning-soft); color: var(--warning);">🎯</span>
+          </div>
+          <div class="kpi-value" id="kpiDisciplineValue">0 / 0 วัน</div>
+          <div class="kpi-sub" id="kpiDisciplineSub">วันที่คุมงบได้ตามกรอบ ฿300/วัน</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Main Content -->
   <main class="main-container">
     <!-- Left Column: Calendar Overview & Daily List -->
@@ -1839,6 +2004,19 @@
           greetingWithName: 'สวัสดีคุณ {NAME}! มาสร้างวินัยการเงินที่ดีไปด้วยกันนะครับ ✨',
           motivationSub: 'การจดบัญชีทุกวันช่วยให้ทุกเพศทุกวัยเห็นภาพการใช้จ่ายชัดเจน และบรรลุเป้าหมายการออมได้ง่ายขึ้น',
           btnEditProfile: 'ตั้งค่าชื่อและรูปโปรไฟล์',
+          dashTitle: 'แดชบอร์ดสรุปภาพรวมการเงิน (Dashboard)',
+          kpiIncomeLabel: 'รายรับรวมเดือนนี้',
+          kpiIncomeSub: '{COUNT} รายการรับในเดือนนี้',
+          kpiExpenseLabel: 'รายจ่ายรวมเดือนนี้',
+          kpiExpenseSub: 'เฉลี่ยวันที่มีรายจ่าย: {AVG}/วัน',
+          kpiNetLabel: 'ยอดคงเหลือสุทธิ (รับ - จ่าย)',
+          kpiNetSubPos: '🌟 เงินออมสุทธิเป็นบวก',
+          kpiNetSubNeg: '⚠️ รายจ่ายสูงกว่ารายรับ',
+          kpiNetSubZero: 'ยังไม่มีรายการเคลื่อนไหว',
+          kpiDisciplineLabel: 'วินัยการใช้จ่ายตามกรอบรายวัน',
+          kpiDisciplineDaysUnit: ' วัน',
+          kpiDisciplineSub: 'วันที่ใช้ไม่เกินกรอบ {LIMIT}/วัน (จากวันที่มีบันทึก)',
+          kpiDisciplineNoLimit: 'ยังไม่ได้ตั้งกรอบรายวัน',
           btnToday: 'วันนี้',
           btnInstall: 'ติดตั้งลงมือถือ',
           calendarTitle: 'ปฏิทินภาพรวมรายรับ-รายจ่าย',
@@ -1918,6 +2096,19 @@
           greetingWithName: 'Hello, {NAME}! Let’s build great financial discipline together ✨',
           motivationSub: 'Tracking daily expenses helps users of all ages stay mindful and reach savings goals faster.',
           btnEditProfile: 'Edit Name & Photo',
+          dashTitle: 'Financial Overview Dashboard',
+          kpiIncomeLabel: 'Monthly Income',
+          kpiIncomeSub: '{COUNT} income entries this month',
+          kpiExpenseLabel: 'Monthly Expense',
+          kpiExpenseSub: 'Avg on active days: {AVG}/day',
+          kpiNetLabel: 'Net Balance (In - Out)',
+          kpiNetSubPos: '🌟 Positive net savings',
+          kpiNetSubNeg: '⚠️ Expenses exceed income',
+          kpiNetSubZero: 'No transactions yet',
+          kpiDisciplineLabel: 'Daily Frame Discipline',
+          kpiDisciplineDaysUnit: ' days',
+          kpiDisciplineSub: 'Days within {LIMIT}/day frame (of active days)',
+          kpiDisciplineNoLimit: 'No daily limit set',
           btnToday: 'Today',
           btnInstall: 'Install on Mobile',
           calendarTitle: 'Income & Expense Calendar Overview',
@@ -2106,6 +2297,16 @@
       const chartOutBar = document.getElementById('chartOutBar');
       const categoryChartContainer = document.getElementById('categoryChartContainer');
 
+      const dashPeriodBadge = document.getElementById('dashPeriodBadge');
+      const kpiMonthIncome = document.getElementById('kpiMonthIncome');
+      const kpiMonthIncomeSub = document.getElementById('kpiMonthIncomeSub');
+      const kpiMonthExpense = document.getElementById('kpiMonthExpense');
+      const kpiMonthExpenseSub = document.getElementById('kpiMonthExpenseSub');
+      const kpiNetBalance = document.getElementById('kpiNetBalance');
+      const kpiNetBalanceSub = document.getElementById('kpiNetBalanceSub');
+      const kpiDisciplineValue = document.getElementById('kpiDisciplineValue');
+      const kpiDisciplineSub = document.getElementById('kpiDisciplineSub');
+
       const profileModal = document.getElementById('profileModal');
       const profileModalAvatarPreview = document.getElementById('profileModalAvatarPreview');
       const profilePhotoInput = document.getElementById('profilePhotoInput');
@@ -2251,6 +2452,11 @@
         document.getElementById('uiBrandTitle').textContent = t('brandTitle');
         document.getElementById('uiBrandSubtitle').textContent = t('brandSubtitle');
         document.getElementById('uiBtnEditProfile').textContent = t('btnEditProfile');
+        document.getElementById('uiDashTitle').textContent = t('dashTitle');
+        document.getElementById('uiKpiIncomeLabel').textContent = t('kpiIncomeLabel');
+        document.getElementById('uiKpiExpenseLabel').textContent = t('kpiExpenseLabel');
+        document.getElementById('uiKpiNetLabel').textContent = t('kpiNetLabel');
+        document.getElementById('uiKpiDisciplineLabel').textContent = t('kpiDisciplineLabel');
         document.getElementById('uiBtnToday').textContent = t('btnToday');
         document.getElementById('uiBtnInstall').textContent = t('btnInstall');
         document.getElementById('uiCalendarTitle').textContent = t('calendarTitle');
@@ -2498,6 +2704,7 @@
         const catExpenseMap = {};
         let totalMonthIn = 0;
         let totalMonthOut = 0;
+        let monthIncomeTxCount = 0;
 
         transactions.forEach(function (tx) {
           if (tx.date.startsWith(monthPrefix)) {
@@ -2507,6 +2714,7 @@
             if (tx.type === 'income') {
               dayMap[tx.date].income += tx.amount;
               totalMonthIn += tx.amount;
+              monthIncomeTxCount++;
             } else {
               dayMap[tx.date].expense += tx.amount;
               totalMonthOut += tx.amount;
@@ -2518,6 +2726,43 @@
 
         monthIncomeTotal.textContent = formatCurrency(totalMonthIn, 'THB');
         monthExpenseTotal.textContent = formatCurrency(totalMonthOut, 'THB');
+
+        // Update Top Dashboard KPIs
+        dashPeriodBadge.textContent = `${MONTHS[currentLang][currentViewMonth]} ${displayYear}`;
+        kpiMonthIncome.textContent = formatCurrency(totalMonthIn, 'THB');
+        kpiMonthIncomeSub.textContent = t('kpiIncomeSub').replace('{COUNT}', monthIncomeTxCount);
+
+        const activeDaysKeys = Object.keys(dayMap);
+        const expenseDaysKeys = activeDaysKeys.filter(function (dKey) {
+          return dayMap[dKey].expense > 0;
+        });
+        const avgExpensePerActiveDay = expenseDaysKeys.length > 0 ? (totalMonthOut / expenseDaysKeys.length) : 0;
+
+        kpiMonthExpense.textContent = formatCurrency(totalMonthOut, 'THB');
+        kpiMonthExpenseSub.textContent = t('kpiExpenseSub').replace('{AVG}', formatCurrency(avgExpensePerActiveDay, 'THB'));
+
+        const netBal = totalMonthIn - totalMonthOut;
+        const netSign = netBal > 0 ? '+' : (netBal < 0 ? '-' : '');
+        kpiNetBalance.textContent = netSign + formatCurrency(Math.abs(netBal), 'THB');
+        kpiNetBalance.className = 'kpi-value ' + (netBal > 0 ? 'text-income' : (netBal < 0 ? 'text-expense' : ''));
+        if (totalMonthIn === 0 && totalMonthOut === 0) {
+          kpiNetBalanceSub.textContent = t('kpiNetSubZero');
+        } else if (netBal >= 0) {
+          kpiNetBalanceSub.textContent = t('kpiNetSubPos');
+        } else {
+          kpiNetBalanceSub.textContent = t('kpiNetSubNeg');
+        }
+
+        if (dailyLimit > 0) {
+          const daysWithinFrame = activeDaysKeys.filter(function (dKey) {
+            return dayMap[dKey].expense <= dailyLimit;
+          }).length;
+          kpiDisciplineValue.textContent = `${daysWithinFrame} / ${activeDaysKeys.length}${t('kpiDisciplineDaysUnit')}`;
+          kpiDisciplineSub.textContent = t('kpiDisciplineSub').replace('{LIMIT}', formatCompactTHB(dailyLimit));
+        } else {
+          kpiDisciplineValue.textContent = `${activeDaysKeys.length}${t('kpiDisciplineDaysUnit')}`;
+          kpiDisciplineSub.textContent = t('kpiDisciplineNoLimit');
+        }
 
         // Update Monthly Income vs Expense Chart
         chartInAmount.textContent = formatCurrency(totalMonthIn, 'THB');
