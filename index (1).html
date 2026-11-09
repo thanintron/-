@@ -1,0 +1,3193 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="บัญชีรายวัน">
+  <title>ระบบจัดการบัญชีส่วนบุคคลรายวัน — by TNT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --surface: #ffffff;
+      --surface-alt: #f8fafc;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --brand: #0f766e;
+      --brand-hover: #0d9488;
+      --brand-soft: #f0fdfa;
+      --brand-border: #99f6e4;
+      --brand-ink: #ffffff;
+      --income: #15803d;
+      --income-soft: #f0fdf4;
+      --income-border: #bbf7d0;
+      --expense: #be123c;
+      --expense-soft: #fff1f2;
+      --expense-border: #fecdd3;
+      --warning: #b45309;
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      --radius: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --font: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .header-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand) 0%, #0d9488 100%);
+      color: var(--brand-ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(15, 118, 110, 0.25);
+    }
+
+    .brand-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+
+    .credit-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--brand);
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-border);
+      padding: 2px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-subtitle {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    /* User Profile Chip in Header */
+    .profile-chip {
+      font: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px 4px 5px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-alt);
+      color: var(--ink);
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .profile-chip:hover {
+      border-color: var(--brand);
+      background: var(--brand-soft);
+    }
+
+    .profile-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-border);
+      color: var(--brand);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      font-size: 0.95rem;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-name-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Language Switcher */
+    .lang-switch {
+      display: inline-flex;
+      background: var(--surface-alt);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+    }
+
+    .lang-btn {
+      font: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lang-btn.is-active {
+      background: var(--brand);
+      color: var(--brand-ink);
+    }
+
+    /* Buttons */
+    .btn {
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.08s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: var(--brand-ink);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--brand-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--ink);
+      border-color: var(--border-strong);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-alt);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      padding: 6px 10px;
+    }
+
+    .btn-ghost:hover {
+      background: var(--surface-alt);
+      color: var(--ink);
+    }
+
+    .btn-icon-action {
+      background: transparent;
+      color: var(--muted);
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .btn-icon-action.edit-action:hover {
+      background: var(--brand-soft);
+      color: var(--brand);
+      border-color: var(--brand-border);
+    }
+
+    .btn-icon-action.delete-action:hover {
+      background: var(--expense-soft);
+      color: var(--expense);
+      border-color: var(--expense-border);
+    }
+
+    /* User Greeting & Motivation Banner */
+    .top-banner-wrap {
+      max-width: 1180px;
+      width: 100%;
+      margin: var(--space-4) auto 0;
+      padding: 0 var(--space-4);
+    }
+
+    @media (min-width: 920px) {
+      .top-banner-wrap {
+        padding: 0 var(--space-6);
+      }
+    }
+
+    .motivation-banner {
+      background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      box-shadow: var(--shadow);
+    }
+
+    .motivation-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .banner-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 2px solid var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      font-size: 1.35rem;
+      cursor: pointer;
+    }
+
+    .banner-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .motivation-greeting {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .motivation-sub {
+      margin: 2px 0 0;
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    /* Main Container & Grid */
+    .main-container {
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space-4);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+      flex: 1;
+    }
+
+    @media (min-width: 920px) {
+      .main-container {
+        padding: var(--space-5) var(--space-6);
+        grid-template-columns: 1.15fr 0.85fr;
+        align-items: start;
+      }
+    }
+
+    .col-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--space-4);
+    }
+
+    @media (min-width: 640px) {
+      .card {
+        padding: var(--space-5);
+      }
+    }
+
+    .card.is-editing {
+      border: 2px solid var(--warning);
+      box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Calendar Navigation & Overview */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .month-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      min-width: 145px;
+      text-align: center;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-alt);
+    }
+
+    .icon-btn:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 2px;
+    }
+
+    /* Calendar Grid */
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 6px;
+      text-align: center;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .calendar-weekdays span:first-child {
+      color: var(--expense);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-cell {
+      min-height: 68px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 640px) {
+      .cal-cell {
+        min-height: 78px;
+        padding: 6px 8px;
+      }
+    }
+
+    .cal-cell:hover {
+      border-color: var(--brand);
+      background: var(--surface-alt);
+    }
+
+    .cal-cell:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 1px;
+    }
+
+    .cal-cell.is-outside {
+      background: #f8fafc;
+      color: #94a3b8;
+      border-color: #f1f5f9;
+      cursor: default;
+    }
+
+    .cal-cell.is-today .cal-day-num {
+      background: var(--ink);
+      color: #ffffff;
+    }
+
+    .cal-cell.is-selected {
+      border: 2px solid var(--brand);
+      background: var(--brand-soft);
+      box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.12);
+    }
+
+    .cal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .cal-day-num {
+      font-size: 0.78rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cal-dot-over {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--expense);
+    }
+
+    .cal-amounts {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .cal-pill {
+      font-size: 0.68rem;
+      font-weight: 600;
+      line-height: 1.2;
+      padding: 1px 4px;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    .cal-pill-in {
+      color: var(--income);
+      background: var(--income-soft);
+    }
+
+    .cal-pill-out {
+      color: var(--expense);
+      background: var(--expense-soft);
+    }
+
+    .calendar-legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .legend-items {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    /* Daily Budget Frame Banner */
+    .daily-frame-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .daily-frame-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-2);
+    }
+
+    .daily-frame-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .frame-input-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .frame-input {
+      width: 110px;
+      padding: 5px 10px;
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      text-align: right;
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .frame-input:focus {
+      outline: 2px solid var(--brand);
+      border-color: transparent;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--brand);
+      border-radius: 999px;
+      transition: width 0.25s ease, background 0.25s ease;
+    }
+
+    .progress-bar.is-warning {
+      background: #d97706;
+    }
+
+    .progress-bar.is-over {
+      background: var(--expense);
+    }
+
+    .daily-summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .text-income {
+      color: var(--income);
+      font-weight: 700;
+    }
+
+    .text-expense {
+      color: var(--expense);
+      font-weight: 700;
+    }
+
+    /* Charts & Summary Card */
+    .chart-section-subtitle {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin: 0 0 var(--space-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .compare-bars-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .compare-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .compare-bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .compare-track {
+      width: 100%;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .compare-fill-in {
+      height: 100%;
+      background: var(--income);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .compare-fill-out {
+      height: 100%;
+      background: var(--expense);
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .cat-chart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cat-chart-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cat-chart-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.84rem;
+    }
+
+    .cat-chart-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .cat-chart-val {
+      font-weight: 700;
+      color: var(--ink);
+      font-size: 0.82rem;
+    }
+
+    .cat-bar-track {
+      width: 100%;
+      height: 8px;
+      background: #f1f5f9;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .cat-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    /* Editing Banner inside Form */
+    .edit-mode-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      background: var(--warning-soft);
+      border: 1px solid var(--warning-border);
+      color: var(--warning);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-3);
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .edit-mode-banner.is-visible {
+      display: flex;
+    }
+
+    /* Form Styles */
+    .type-segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--surface-alt);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      margin-bottom: var(--space-4);
+    }
+
+    .type-btn {
+      font: inherit;
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .type-btn.active-expense {
+      background: var(--expense);
+      color: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .type-btn.active-income {
+      background: var(--income);
+      color: #ffffff;
+      box-shadow: var(--shadow);
+    }
+
+    .form-group {
+      margin-bottom: var(--space-3);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+
+    .form-control {
+      width: 100%;
+      font: inherit;
+      font-size: 0.95rem;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    /* Currency Conversion Box */
+    .currency-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .currency-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+
+    .currency-preview-pill {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--brand);
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-border);
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .rate-row {
+      display: none;
+      margin-top: var(--space-2);
+      padding-top: var(--space-2);
+      border-top: 1px dashed var(--border-strong);
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .rate-row.is-visible {
+      display: flex;
+    }
+
+    .rate-input {
+      width: 110px;
+      padding: 5px 8px;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1px solid var(--border-strong);
+      border-radius: 7px;
+      text-align: right;
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    /* Receipt Capture & OCR Upload Box */
+    .receipt-upload-zone {
+      border: 1.5px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3);
+      text-align: center;
+      background: var(--surface-alt);
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .receipt-upload-zone:hover {
+      border-color: var(--brand);
+      background: var(--brand-soft);
+    }
+
+    .receipt-upload-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .receipt-preview-box {
+      margin-top: var(--space-3);
+      display: none;
+      flex-direction: column;
+      gap: var(--space-2);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: var(--space-3);
+      border-radius: var(--radius-sm);
+      text-align: left;
+    }
+
+    .receipt-preview-box.is-visible {
+      display: flex;
+    }
+
+    .receipt-preview-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .receipt-preview-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      overflow: hidden;
+    }
+
+    .receipt-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    /* OCR Scanner Panel */
+    .ocr-panel {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: var(--space-2) var(--space-3);
+      font-size: 0.82rem;
+    }
+
+    .ocr-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ocr-chips {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .ocr-chip {
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--brand);
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-border);
+      padding: 3px 9px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .ocr-chip:hover {
+      background: var(--brand);
+      color: var(--brand-ink);
+    }
+
+    .form-error {
+      color: var(--expense);
+      font-size: 0.82rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .form-error.is-visible {
+      display: block;
+    }
+
+    /* Transaction List */
+    .tx-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+    }
+
+    .tx-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .tx-item:hover {
+      border-color: var(--border-strong);
+    }
+
+    .tx-item.is-being-edited {
+      border-color: var(--warning);
+      background: var(--warning-soft);
+    }
+
+    .tx-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      min-width: 0;
+    }
+
+    .tx-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+    }
+
+    .tx-badge.is-expense {
+      background: var(--expense-soft);
+      color: var(--expense);
+      border: 1px solid var(--expense-border);
+    }
+
+    .tx-badge.is-income {
+      background: var(--income-soft);
+      color: var(--income);
+      border: 1px solid var(--income-border);
+    }
+
+    .tx-details {
+      min-width: 0;
+    }
+
+    .tx-desc {
+      margin: 0;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tx-meta {
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tx-fx-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 1px 6px;
+      border-radius: 5px;
+    }
+
+    .tx-receipt-btn {
+      font: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--brand);
+      background: var(--brand-soft);
+      border: 1px solid var(--brand-border);
+      padding: 2px 7px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tx-receipt-btn:hover {
+      background: #ccfbf1;
+    }
+
+    .tx-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .tx-amount {
+      font-weight: 700;
+      font-size: 0.98rem;
+      text-align: right;
+      margin-right: 4px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-5) var(--space-4);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface-alt);
+      color: var(--muted);
+    }
+
+    .empty-state-icon {
+      font-size: 1.75rem;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .empty-state p {
+      margin: 0;
+      font-size: 0.88rem;
+    }
+
+    /* Footer */
+    .app-footer {
+      text-align: center;
+      padding: var(--space-4);
+      font-size: 0.82rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      margin-top: var(--space-4);
+    }
+
+    .app-footer strong {
+      color: var(--brand);
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      z-index: 100;
+    }
+
+    .modal-backdrop.is-open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      max-width: 480px;
+      width: 100%;
+      padding: var(--space-5);
+      box-shadow: var(--shadow-md);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .receipt-full-img {
+      width: 100%;
+      max-height: 65vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: #0f172a;
+    }
+
+    .install-steps {
+      padding-left: 20px;
+      margin: var(--space-3) 0;
+      font-size: 0.92rem;
+      color: var(--ink);
+    }
+
+    .install-steps li {
+      margin-bottom: 8px;
+    }
+
+    /* Profile Modal Avatar Upload */
+    .profile-upload-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-4);
+    }
+
+    .profile-avatar-large {
+      width: 84px;
+      height: 84px;
+      border-radius: 999px;
+      background: var(--brand-soft);
+      border: 2px solid var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      overflow: hidden;
+    }
+
+    .profile-avatar-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <path d="M8 14h.01"></path>
+            <path d="M12 14h.01"></path>
+            <path d="M16 14h.01"></path>
+            <path d="M8 18h.01"></path>
+            <path d="M12 18h.01"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title-row">
+            <h1 class="brand-title" id="uiBrandTitle">บัญชีรายวันส่วนบุคคล</h1>
+            <span class="credit-badge">by TNT</span>
+          </div>
+          <p class="brand-subtitle" id="uiBrandSubtitle">สร้างวินัยการใช้จ่ายสำหรับทุกเพศทุกวัย • สแกนใบเสร็จ แปลงค่าเงิน และกราฟสรุปผล</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- User Profile Button -->
+        <button type="button" class="profile-chip" id="btnOpenProfile" title="ตั้งค่าโปรไฟล์ผู้ใช้">
+          <span class="profile-avatar" id="headerAvatarBox">😊</span>
+          <span class="profile-name-text" id="headerUserName">ตั้งชื่อผู้ใช้</span>
+        </button>
+
+        <div class="lang-switch" role="group" aria-label="Language Switcher">
+          <button type="button" class="lang-btn is-active" id="langBtnTH">TH</button>
+          <button type="button" class="lang-btn" id="langBtnEN">EN</button>
+        </div>
+
+        <button type="button" class="btn btn-secondary" id="btnToday">📅 <span id="uiBtnToday">วันนี้</span></button>
+
+        <button type="button" class="btn btn-primary" id="btnInstallGuide">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          <span id="uiBtnInstall">ติดตั้งลงมือถือ</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- User Welcome & Financial Discipline Motivation Banner -->
+  <div class="top-banner-wrap">
+    <div class="motivation-banner">
+      <div class="motivation-left">
+        <div class="banner-avatar" id="bannerAvatarBox" title="คลิกเพื่อเปลี่ยนรูปและชื่อผู้ใช้">😊</div>
+        <div>
+          <h2 class="motivation-greeting" id="uiGreetingTitle">สวัสดี! มาสร้างวินัยการเงินที่ดีไปด้วยกันนะครับ ✨</h2>
+          <p class="motivation-sub" id="uiMotivationQuote">การจดบัญชีทุกวันช่วยให้ทุกเพศทุกวัยเห็นภาพการใช้จ่ายชัดเจน และบรรลุเป้าหมายการออมได้ง่ายขึ้น</p>
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary" id="btnEditProfileBanner" style="font-size: 0.82rem; padding: 6px 12px;">
+        👤 <span id="uiBtnEditProfile">ตั้งค่าชื่อและรูปโปรไฟล์</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- Left Column: Calendar Overview & Daily List -->
+    <section class="col-stack" aria-label="Calendar Overview">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span>🗓️</span>
+            <span id="uiCalendarTitle">ปฏิทินภาพรวมรายรับ-รายจ่าย</span>
+          </h2>
+          <div class="month-nav">
+            <button type="button" class="icon-btn" id="btnPrevMonth" aria-label="Previous Month">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <div class="month-label" id="currentMonthLabel">-</div>
+            <button type="button" class="icon-btn" id="btnNextMonth" aria-label="Next Month">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="calendar-weekdays" id="calendarWeekdays">
+          <span>อา.</span>
+          <span>จ.</span>
+          <span>อ.</span>
+          <span>พ.</span>
+          <span>พฤ.</span>
+          <span>ศ.</span>
+          <span>ส.</span>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid" role="grid" aria-label="Calendar Grid"></div>
+
+        <div class="calendar-legend">
+          <div class="legend-items">
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: var(--income);"></span>
+              <span id="uiLegendIncome">รายรับวันนั้น</span>
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: var(--expense);"></span>
+              <span id="uiLegendExpense">รายจ่ายวันนั้น</span>
+            </span>
+            <span class="legend-item">
+              <span class="legend-swatch" style="background: var(--expense); border-radius: 999px;"></span>
+              <span id="uiLegendOver">จ่ายเกินกรอบรายวัน</span>
+            </span>
+          </div>
+          <div id="monthlySummaryText">
+            <span id="uiMonthSummaryPrefix">เดือนนี้: รับ</span> <span class="text-income" id="monthIncomeTotal">฿0.00</span> | <span id="uiMonthSummaryOut">จ่าย</span> <span class="text-expense" id="monthExpenseTotal">฿0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Day Detail List -->
+      <div class="card">
+        <div class="card-header" style="margin-bottom: var(--space-3);">
+          <h2 class="card-title">
+            <span>📋</span>
+            <span id="selectedDateHeading">รายการของวันที่เลือก</span>
+          </h2>
+        </div>
+
+        <!-- Daily Budget Frame Bar -->
+        <div class="daily-frame-box">
+          <div class="daily-frame-top">
+            <label for="dailyLimitInput" class="daily-frame-label">
+              <span>🎯</span>
+              <span id="uiDailyLimitLabel">กรอบค่าใช้จ่ายต่อวัน (THB)</span>
+            </label>
+            <div class="frame-input-group">
+              <input type="number" id="dailyLimitInput" class="frame-input" min="0" step="10" value="300" aria-label="Daily Spending Limit">
+              <span style="font-size: 0.85rem; color: var(--muted);" id="uiPerDayUnit">฿/วัน</span>
+            </div>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="dailyProgressBar" style="width: 0%;"></div>
+          </div>
+          <div class="daily-summary-row">
+            <span><span id="uiDayInLabel">รายรับวันนี้:</span> <strong class="text-income" id="dayIncomeText">฿0.00</strong></span>
+            <span><span id="uiDayOutLabel">ใช้จ่ายวันนี้:</span> <strong class="text-expense" id="dayExpenseText">฿0.00</strong></span>
+            <span id="dayFrameStatusText">คงเหลือตามกรอบ: ฿300.00</span>
+          </div>
+        </div>
+
+        <!-- Transactions of selected day -->
+        <div id="dayTransactionsContainer"></div>
+      </div>
+    </section>
+
+    <!-- Right Column: Add/Edit Form & Visual Summary Chart -->
+    <section class="col-stack" aria-label="Transaction Form & Summary Chart">
+      <!-- Form Card -->
+      <div class="card" id="formCardContainer">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span id="formHeaderIcon">✍️</span>
+            <span id="uiFormTitle">บันทึกรายการรับ-จ่าย</span>
+          </h2>
+        </div>
+
+        <!-- Edit Mode Notification Banner -->
+        <div class="edit-mode-banner" id="editModeBanner">
+          <span id="uiEditingNotice">✏️ กำลังแก้ไขรายการที่เลือก</span>
+          <button type="button" class="btn btn-secondary" id="btnCancelEdit" style="padding: 4px 10px; font-size: 0.78rem;">
+            ยกเลิกการแก้ไข
+          </button>
+        </div>
+
+        <form id="transactionForm" novalidate>
+          <!-- Transaction Type Selector -->
+          <div class="type-segmented" role="radiogroup" aria-label="Transaction Type">
+            <button type="button" class="type-btn active-expense" id="typeBtnExpense" data-type="expense">
+              💸 - รายจ่าย
+            </button>
+            <button type="button" class="type-btn" id="typeBtnIncome" data-type="income">
+              💰 + รายรับ
+            </button>
+          </div>
+
+          <!-- Date & Amount -->
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label" for="txDateInput" id="uiDateLabel">📅 วันที่</label>
+              <input type="date" id="txDateInput" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="txAmountInput" id="uiAmountLabel">💵 จำนวนเงิน</label>
+              <input type="number" id="txAmountInput" class="form-control" placeholder="0.00" min="0.01" step="0.01" inputmode="decimal" required>
+            </div>
+          </div>
+
+          <!-- Multi-Currency Selector & Exchange Rate -->
+          <div class="currency-box">
+            <div class="currency-box-header">
+              <label class="form-label" for="txCurrencySelect" id="uiCurrencyLabel" style="margin: 0;">🌍 สกุลเงินที่ใช้จ่าย (รองรับเดินทางต่างประเทศ)</label>
+              <span class="currency-preview-pill" id="convertedPreviewPill">= ฿0.00 THB</span>
+            </div>
+            <select id="txCurrencySelect" class="form-control">
+              <option value="THB">🇹🇭 THB (฿) - บาทไทย / Thai Baht</option>
+              <option value="USD">🇺🇸 USD ($) - ดอลลาร์สหรัฐ / US Dollar</option>
+              <option value="JPY">🇯🇵 JPY (¥) - เยนญี่ปุ่น / Japanese Yen</option>
+              <option value="EUR">🇪🇺 EUR (€) - ยูโร / Euro</option>
+              <option value="GBP">🇬🇧 GBP (£) - ปอนด์อังกฤษ / British Pound</option>
+              <option value="CNY">🇨🇳 CNY (¥) - หยวนจีน / Chinese Yuan</option>
+              <option value="KRW">🇰🇷 KRW (₩) - วอนเกาหลี / South Korean Won</option>
+              <option value="SGD">🇸🇬 SGD (S$) - ดอลลาร์สิงคโปร์ / Singapore Dollar</option>
+              <option value="HKD">🇭🇰 HKD (HK$) - ดอลลาร์ฮ่องกง / Hong Kong Dollar</option>
+              <option value="TWD">🇹🇼 TWD (NT$) - ดอลลาร์ไต้หวัน / Taiwan Dollar</option>
+            </select>
+            <div class="rate-row" id="exchangeRateRow">
+              <span id="exchangeRateLabelText">อัตราแลกเปลี่ยน (1 USD = ? THB):</span>
+              <input type="number" id="exchangeRateInput" class="rate-input" min="0.0001" step="0.0001" value="34.50">
+            </div>
+          </div>
+
+          <!-- Category & Description -->
+          <div class="form-group">
+            <label class="form-label" for="txCategoryInput" id="uiCategoryLabel">🏷️ หมวดหมู่</label>
+            <select id="txCategoryInput" class="form-control"></select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="txDescInput" id="uiDescLabel">📝 รายละเอียดการใช้จ่าย / รายรับ</label>
+            <input type="text" id="txDescInput" class="form-control" placeholder="เช่น ข้าวมันไก่, รถไฟใต้ดินโตเกียว, เงินได้พิเศษ" required>
+          </div>
+
+          <!-- Receipt / Bank Slip Photo Capture & OCR Number Reader -->
+          <div class="form-group">
+            <label class="form-label" id="uiReceiptLabel">📸 สลิปโอนเงินแอปธนาคาร / ถ่ายภาพใบเสร็จ (สแกนข้อมูลอัตโนมัติ)</label>
+            <div class="receipt-upload-zone">
+              <input type="file" id="slipGalleryInput" accept="image/*" style="display: none;">
+              <input type="file" id="receiptFileInput" accept="image/*" capture="environment" style="display: none;">
+              <div class="receipt-upload-actions">
+                <button type="button" class="btn btn-primary" id="btnTriggerSlipGallery" style="font-size: 0.86rem; padding: 8px 12px;">
+                  📲 <span id="uiBtnSlipGallery">เลือกสลิปธนาคารจากอัลบั้ม</span>
+                </button>
+                <button type="button" class="btn btn-secondary" id="btnTriggerCamera" style="font-size: 0.86rem; padding: 8px 12px;">
+                  📷 <span id="uiBtnCamera">ถ่ายรูปใบเสร็จ</span>
+                </button>
+              </div>
+              <p style="margin: 6px 0 0; font-size: 0.78rem; color: var(--muted);" id="uiReceiptHint">
+                ดึงสลิปโอนเงินที่บันทึกไว้ในมือถือหรือถ่ายใบเสร็จ ระบบจะอ่านยอดเงินและชื่อธนาคาร/รายละเอียดให้อัตโนมัติ
+              </p>
+
+              <!-- Attached Receipt/Slip Preview + OCR Result -->
+              <div class="receipt-preview-box" id="receiptPreviewBox">
+                <div class="receipt-preview-top">
+                  <div class="receipt-preview-info">
+                    <img id="receiptThumbImg" class="receipt-thumb" src="" alt="Receipt Preview">
+                    <div>
+                      <div style="font-size: 0.84rem; font-weight: 600; color: var(--ink);" id="receiptFileName">แนบสลิป/ใบเสร็จแล้ว</div>
+                      <div style="font-size: 0.75rem; color: var(--muted);" id="uiTapToZoom">แตะที่รูปเพื่อดูขนาดใหญ่</div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-ghost" id="btnClearReceipt">ลบออก</button>
+                </div>
+
+                <!-- OCR Scanner Output -->
+                <div class="ocr-panel" id="ocrStatusPanel">
+                  <div class="ocr-status-row">
+                    <span id="ocrStatusText" style="font-weight: 600; color: var(--ink);">พร้อมสแกนข้อมูลจากสลิป/ใบเสร็จ</span>
+                    <button type="button" class="btn btn-secondary" id="btnRescanOcr" style="padding: 4px 10px; font-size: 0.76rem;">
+                      สแกนข้อมูลอีกครั้ง
+                    </button>
+                  </div>
+                  <div id="ocrSlipInfoBadge" style="display: none; margin-top: 6px; font-size: 0.78rem; color: var(--brand); font-weight: 600;"></div>
+                  <div class="ocr-chips" id="ocrNumberChips"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-error" id="formErrorMsg">กรุณาระบุจำนวนเงินที่มากกว่า 0 และกรอกรายละเอียดรายการ</div>
+
+          <button type="submit" class="btn btn-primary" id="uiBtnSubmit" style="width: 100%; padding: 12px; font-size: 0.98rem; margin-top: var(--space-2);">
+            💾 บันทึกรายการลงปฏิทิน
+          </button>
+        </form>
+      </div>
+
+      <!-- Visual Chart Summary Card -->
+      <div class="card">
+        <div class="card-header" style="margin-bottom: var(--space-3);">
+          <h2 class="card-title">
+            <span>📊</span>
+            <span id="uiChartTitle">กราฟสรุปรายรับ-รายจ่ายประจำเดือน</span>
+          </h2>
+        </div>
+
+        <!-- Monthly Income vs Expense Comparison Bar -->
+        <div class="compare-bars-box">
+          <div class="compare-bar-row">
+            <div class="compare-bar-meta">
+              <span id="uiChartInLabel">💰 รายรับรวมเดือนนี้</span>
+              <span class="text-income" id="chartInAmount">฿0.00</span>
+            </div>
+            <div class="compare-track">
+              <div class="compare-fill-in" id="chartInBar" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="compare-bar-row">
+            <div class="compare-bar-meta">
+              <span id="uiChartOutLabel">💸 รายจ่ายรวมเดือนนี้</span>
+              <span class="text-expense" id="chartOutAmount">฿0.00</span>
+            </div>
+            <div class="compare-track">
+              <div class="compare-fill-out" id="chartOutBar" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category Breakdown Bars -->
+        <div class="chart-section-subtitle">
+          <span id="uiCatBreakdownTitle">สัดส่วนรายจ่ายแยกตามหมวดหมู่</span>
+        </div>
+        <div id="categoryChartContainer"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span id="uiFooterText">ระบบจัดการบัญชีส่วนบุคคลรายวัน สำหรับทุกเพศทุกวัย (TH / EN) • พัฒนาและออกแบบ</span> <strong>by TNT</strong>
+  </footer>
+
+  <!-- Modal: User Profile (Name & Photo) -->
+  <div class="modal-backdrop" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="profileModalTitle">👤 ตั้งค่าโปรไฟล์ผู้ใช้งาน</h3>
+        <button type="button" class="icon-btn" id="btnCloseProfileModal" aria-label="Close">✕</button>
+      </div>
+
+      <div class="profile-upload-area">
+        <div class="profile-avatar-large" id="profileModalAvatarPreview">😊</div>
+        <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+          <button type="button" class="btn btn-secondary" id="btnChooseProfilePhoto" style="font-size: 0.84rem; padding: 6px 12px;">
+            📷 <span id="uiBtnChooseAvatar">เลือกรูปโปรไฟล์ / ถ่ายรูป</span>
+          </button>
+          <button type="button" class="btn btn-ghost" id="btnRemoveProfilePhoto" style="font-size: 0.82rem;">
+            <span id="uiBtnRemoveAvatar">ลบรูป</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="profileNameInput" id="uiProfileNameLabel">ชื่อผู้ใช้งาน / ชื่อเล่น</label>
+        <input type="text" id="profileNameInput" class="form-control" placeholder="เช่น คุณต้น, น้องเมย์, คุณพ่อ">
+      </div>
+
+      <button type="button" class="btn btn-primary" id="btnSaveProfile" style="width: 100%; margin-top: var(--space-3);">
+        บันทึกโปรไฟล์
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal: View Receipt Photo -->
+  <div class="modal-backdrop" id="receiptModal" role="dialog" aria-modal="true" aria-labelledby="receiptModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="receiptModalTitle">รูปภาพใบเสร็จ</h3>
+        <button type="button" class="icon-btn" id="btnCloseReceiptModal" aria-label="Close">✕</button>
+      </div>
+      <div id="receiptModalMeta" style="font-size: 0.85rem; color: var(--muted); margin-bottom: var(--space-3);"></div>
+      <img id="receiptModalImg" class="receipt-full-img" src="" alt="Receipt Image">
+    </div>
+  </div>
+
+  <!-- Modal: Mobile Install Instructions -->
+  <div class="modal-backdrop" id="installModal" role="dialog" aria-modal="true" aria-labelledby="installModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="installModalTitle">วิธีติดตั้งแอปลงบนหน้าจอมือถือ</h3>
+        <button type="button" class="icon-btn" id="btnCloseInstallModal" aria-label="Close">✕</button>
+      </div>
+      <p style="margin: 0 0 var(--space-2); font-size: 0.9rem; color: var(--muted);" id="uiInstallIntro">
+        ระบบนี้ออกแบบให้ใช้งานแบบ Web App บนมือถือ สามารถเพิ่มไว้ที่หน้าจอหลัก (Home Screen) เพื่อเปิดใช้งานและถ่ายใบเสร็จได้ทันทีเหมือนแอปทั่วไป:
+      </p>
+      <div style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3); margin-bottom: var(--space-3);">
+        <strong style="font-size: 0.9rem; color: var(--ink);" id="uiInstallIosTitle">สำหรับ iOS (iPhone / Safari)</strong>
+        <ol class="install-steps" id="uiInstallIosSteps">
+          <li>เปิดหน้าเว็บนี้ในเบราว์เซอร์ <strong>Safari</strong></li>
+          <li>แตะปุ่ม <strong>แชร์ (Share)</strong> ด้านล่างหน้าจอ</li>
+          <li>เลือกเมนู <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong></li>
+        </ol>
+      </div>
+      <div style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3);">
+        <strong style="font-size: 0.9rem; color: var(--ink);" id="uiInstallAndroidTitle">สำหรับ Android (Chrome)</strong>
+        <ol class="install-steps" id="uiInstallAndroidSteps">
+          <li>เปิดในเบราว์เซอร์ <strong>Chrome</strong> บนมือถือ</li>
+          <li>แตะเมนูจุด 3 จุด มุมขวาบน</li>
+          <li>เลือก <strong>"เพิ่มลงในหน้าจอหลัก" (Add to Home screen / Install app)</strong></li>
+        </ol>
+      </div>
+      <button type="button" class="btn btn-primary" id="btnOkInstallModal" style="width: 100%; margin-top: var(--space-4);">เข้าใจแล้ว</button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY_TX = 'personal_daily_accounting_tx_v1';
+      const STORAGE_KEY_LIMIT = 'personal_daily_accounting_limit_v1';
+      const STORAGE_KEY_LANG = 'personal_daily_accounting_lang_v1';
+      const STORAGE_KEY_RATES = 'personal_daily_accounting_rates_v1';
+      const STORAGE_KEY_PROFILE = 'personal_daily_accounting_profile_v1';
+
+      const MONTHS = {
+        th: [
+          'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+          'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+        ],
+        en: [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+      };
+
+      const WEEKDAYS = {
+        th: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'],
+        en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      };
+
+      const CATEGORIES = [
+        { id: 'food', icon: '🍜', color: '#f97316', th: 'อาหารและเครื่องดื่ม', en: 'Food & Dining' },
+        { id: 'transport', icon: '🚆', color: '#0284c7', th: 'การเดินทาง / ต่างประเทศ', en: 'Transport & Travel' },
+        { id: 'shopping', icon: '🛍️', color: '#8b5cf6', th: 'ของใช้ประจำวัน / ช้อปปิ้ง', en: 'Daily Needs & Shopping' },
+        { id: 'bills', icon: '💡', color: '#eab308', th: 'บิลและค่าสาธารณูปโภค', en: 'Bills & Utilities' },
+        { id: 'health', icon: '💊', color: '#ec4899', th: 'สุขภาพและการเรียนรู้', en: 'Health & Education' },
+        { id: 'salary', icon: '💰', color: '#16a34a', th: 'รายรับ / เงินเดือน / เงินออม', en: 'Income / Salary / Saving' },
+        { id: 'other', icon: '✨', color: '#64748b', th: 'อื่นๆ', en: 'Others' }
+      ];
+
+      const DEFAULT_RATES_TO_THB = {
+        THB: 1,
+        USD: 34.50,
+        JPY: 0.23,
+        EUR: 37.50,
+        GBP: 44.00,
+        CNY: 4.80,
+        KRW: 0.025,
+        SGD: 25.80,
+        HKD: 4.42,
+        TWD: 1.08
+      };
+
+      const CURRENCY_SYMBOLS = {
+        THB: '฿',
+        USD: '$',
+        JPY: '¥',
+        EUR: '€',
+        GBP: '£',
+        CNY: '¥',
+        KRW: '₩',
+        SGD: 'S$',
+        HKD: 'HK$',
+        TWD: 'NT$'
+      };
+
+      const I18N = {
+        th: {
+          brandTitle: 'บัญชีรายวันส่วนบุคคล',
+          brandSubtitle: 'สร้างวินัยการใช้จ่ายสำหรับทุกเพศทุกวัย • สแกนใบเสร็จ แปลงค่าเงิน และกราฟสรุปผล',
+          defaultUserName: 'ตั้งชื่อผู้ใช้',
+          greetingNoName: 'สวัสดี! มาสร้างวินัยการเงินที่ดีไปด้วยกันนะครับ ✨',
+          greetingWithName: 'สวัสดีคุณ {NAME}! มาสร้างวินัยการเงินที่ดีไปด้วยกันนะครับ ✨',
+          motivationSub: 'การจดบัญชีทุกวันช่วยให้ทุกเพศทุกวัยเห็นภาพการใช้จ่ายชัดเจน และบรรลุเป้าหมายการออมได้ง่ายขึ้น',
+          btnEditProfile: 'ตั้งค่าชื่อและรูปโปรไฟล์',
+          btnToday: 'วันนี้',
+          btnInstall: 'ติดตั้งลงมือถือ',
+          calendarTitle: 'ปฏิทินภาพรวมรายรับ-รายจ่าย',
+          legendIncome: 'รายรับวันนั้น',
+          legendExpense: 'รายจ่ายวันนั้น',
+          legendOver: 'จ่ายเกินกรอบรายวัน',
+          monthSummaryPrefix: 'เดือนนี้: รับ',
+          monthSummaryOut: 'จ่าย',
+          selectedDatePrefix: 'รายการวันที่ ',
+          dailyLimitLabel: 'กรอบค่าใช้จ่ายต่อวัน (THB)',
+          perDayUnit: '฿/วัน',
+          dayInLabel: 'รายรับวันนี้:',
+          dayOutLabel: 'ใช้จ่ายวันนี้:',
+          frameRemainPrefix: '🌟 ยอดเยี่ยม! คงเหลือในกรอบวันนี้: ',
+          frameOverPrefix: '⚠️ เกินกรอบรายวัน: ',
+          frameNone: 'ไม่ได้ตั้งกรอบค่าใช้จ่ายรายวัน',
+          emptyDayTitle: 'ยังไม่มีรายการรับ-จ่ายในวันนี้',
+          emptyDaySub: 'เริ่มต้นสร้างวินัยการใช้จ่ายง่ายๆ เพียงถ่ายใบเสร็จหรือกรอกรายการทางด้านขวา',
+          formTitleAdd: 'บันทึกรายการรับ-จ่าย',
+          formTitleEdit: 'แก้ไขรายการที่บันทึกไว้',
+          editingNotice: '✏️ กำลังแก้ไขรายการ (ปรับข้อมูลแล้วกดบันทึกการแก้ไข)',
+          btnCancelEdit: 'ยกเลิกการแก้ไข',
+          typeExpense: '💸 - รายจ่าย',
+          typeIncome: '💰 + รายรับ',
+          dateLabel: '📅 วันที่',
+          amountLabel: '💵 จำนวนเงิน',
+          currencyLabel: '🌍 สกุลเงินที่ใช้จ่าย (รองรับเดินทางต่างประเทศ)',
+          rateLabel: 'อัตราแลกเปลี่ยน (1 {CUR} = ? THB):',
+          categoryLabel: '🏷️ หมวดหมู่',
+          descLabel: '📝 รายละเอียดการใช้จ่าย / รายรับ',
+          descPlaceholder: 'เช่น ข้าวมันไก่, รถไฟใต้ดินโตเกียว, เงินได้พิเศษ',
+          receiptLabel: '📸 สลิปโอนเงินแอปธนาคาร / ถ่ายภาพใบเสร็จ (สแกนข้อมูลอัตโนมัติ)',
+          btnSlipGallery: 'เลือกสลิปธนาคารจากอัลบั้ม',
+          btnCamera: 'ถ่ายรูปใบเสร็จ',
+          receiptHint: 'ดึงสลิปโอนเงินที่บันทึกไว้ในมือถือหรือถ่ายใบเสร็จ ระบบจะอ่านยอดเงินและชื่อธนาคาร/รายละเอียดให้อัตโนมัติ',
+          tapToZoom: 'แตะที่รูปเพื่อดูขนาดใหญ่',
+          btnClearReceipt: 'ลบออก',
+          ocrScanning: 'กำลังสแกนอ่านยอดเงินและข้อมูลจากสลิปธนาคาร / ใบเสร็จ...',
+          ocrFound: 'พบตัวเลขยอดเงินจากสลิป/ใบเสร็จ (แตะเพื่อใช้ยอดเงิน):',
+          ocrNotFound: 'ไม่พบตัวเลขที่ชัดเจน กรุณากรอกจำนวนเงินด้วยตนเอง หรือกดสแกนใหม่',
+          btnRescan: 'สแกนข้อมูลอีกครั้ง',
+          formError: 'กรุณาระบุจำนวนเงินที่มากกว่า 0 และกรอกรายละเอียดรายการ',
+          btnSubmitAdd: '💾 บันทึกรายการลงปฏิทิน',
+          btnSubmitEdit: '✅ บันทึกการแก้ไขรายการ',
+          viewReceipt: 'ดูสลิป/ใบเสร็จ',
+          btnEditTx: 'แก้ไขรายการ',
+          btnDeleteTx: 'ลบรายการ',
+          receiptDefaultDesc: 'รายการจากใบเสร็จ',
+          slipDefaultDesc: 'โอนจ่ายผ่านแอปธนาคาร',
+          slipDetectedPrefix: '🏦 ตรวจพบข้อมูลสลิป: ',
+          chartTitle: 'กราฟสรุปรายรับ-รายจ่ายประจำเดือน',
+          chartInLabel: '💰 รายรับรวมเดือนนี้',
+          chartOutLabel: '💸 รายจ่ายรวมเดือนนี้',
+          catBreakdownTitle: 'สัดส่วนรายจ่ายแยกตามหมวดหมู่ (เดือนนี้)',
+          emptyChartText: 'ยังไม่มีข้อมูลรายจ่ายในเดือนนี้ บันทึกรายการเพื่อดูกราฟสรุปผล',
+          profileModalTitle: '👤 ตั้งค่าโปรไฟล์ผู้ใช้งาน',
+          btnChooseAvatar: 'เลือกรูปโปรไฟล์ / ถ่ายรูป',
+          btnRemoveAvatar: 'ลบรูป',
+          profileNameLabel: 'ชื่อผู้ใช้งาน / ชื่อเล่น',
+          profileNamePlaceholder: 'เช่น คุณต้น, น้องเมย์, คุณพ่อ',
+          btnSaveProfile: 'บันทึกโปรไฟล์',
+          receiptModalTitle: 'รูปภาพใบเสร็จ',
+          installModalTitle: 'วิธีติดตั้งแอปลงบนหน้าจอมือถือ',
+          installIntro: 'ระบบนี้ออกแบบให้ใช้งานแบบ Web App บนมือถือ สามารถเพิ่มไว้ที่หน้าจอหลัก (Home Screen) เพื่อเปิดใช้งานและถ่ายใบเสร็จได้ทันทีเหมือนแอปทั่วไป:',
+          installIosTitle: 'สำหรับ iOS (iPhone / Safari)',
+          installIosSteps: '<li>เปิดหน้าเว็บนี้ในเบราว์เซอร์ <strong>Safari</strong></li><li>แตะปุ่ม <strong>แชร์ (Share)</strong> ด้านล่างหน้าจอ</li><li>เลือกเมนู <strong>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</strong></li>',
+          installAndroidTitle: 'สำหรับ Android (Chrome)',
+          installAndroidSteps: '<li>เปิดในเบราว์เซอร์ <strong>Chrome</strong> บนมือถือ</li><li>แตะเมนูจุด 3 จุด มุมขวาบน</li><li>เลือก <strong>"เพิ่มลงในหน้าจอหลัก" (Add to Home screen / Install app)</strong></li>',
+          btnOkModal: 'เข้าใจแล้ว',
+          footerText: 'ระบบจัดการบัญชีส่วนบุคคลรายวัน สำหรับทุกเพศทุกวัย (TH / EN) • พัฒนาและออกแบบ'
+        },
+        en: {
+          brandTitle: 'Personal Daily Accounting',
+          brandSubtitle: 'Build smart spending habits for all ages • Receipt OCR, multi-currency & visual charts',
+          defaultUserName: 'Set Profile',
+          greetingNoName: 'Hello! Let’s build great financial discipline together ✨',
+          greetingWithName: 'Hello, {NAME}! Let’s build great financial discipline together ✨',
+          motivationSub: 'Tracking daily expenses helps users of all ages stay mindful and reach savings goals faster.',
+          btnEditProfile: 'Edit Name & Photo',
+          btnToday: 'Today',
+          btnInstall: 'Install on Mobile',
+          calendarTitle: 'Income & Expense Calendar Overview',
+          legendIncome: 'Daily Income',
+          legendExpense: 'Daily Expense',
+          legendOver: 'Over Daily Limit',
+          monthSummaryPrefix: 'This Month: In',
+          monthSummaryOut: 'Out',
+          selectedDatePrefix: 'Transactions on ',
+          dailyLimitLabel: 'Daily Spending Frame (THB)',
+          perDayUnit: '฿/day',
+          dayInLabel: 'Today Income:',
+          dayOutLabel: 'Today Spent:',
+          frameRemainPrefix: '🌟 Great job! Remaining in frame: ',
+          frameOverPrefix: '⚠️ Over daily frame: ',
+          frameNone: 'No daily spending limit set',
+          emptyDayTitle: 'No transactions recorded for this day',
+          emptyDaySub: 'Start your financial habit by scanning a receipt or adding an entry on the right.',
+          formTitleAdd: 'Add Income / Expense',
+          formTitleEdit: 'Edit Selected Transaction',
+          editingNotice: '✏️ Editing transaction (update fields and click Save Changes)',
+          btnCancelEdit: 'Cancel Edit',
+          typeExpense: '💸 - Expense',
+          typeIncome: '💰 + Income',
+          dateLabel: '📅 Date',
+          amountLabel: '💵 Amount',
+          currencyLabel: '🌍 Transaction Currency (Travel & Overseas Ready)',
+          rateLabel: 'Exchange Rate (1 {CUR} = ? THB):',
+          categoryLabel: '🏷️ Category',
+          descLabel: '📝 Description / Note',
+          descPlaceholder: 'e.g. Lunch, Tokyo Subway, Freelance Income',
+          receiptLabel: '📸 Bank Transfer Slip / Receipt Photo (Auto-Scan Info)',
+          btnSlipGallery: 'Select Bank Slip from Album',
+          btnCamera: 'Take Receipt Photo',
+          receiptHint: 'Pick a saved bank transfer slip from your phone or take a receipt photo to auto-extract amount & bank details.',
+          tapToZoom: 'Tap image to enlarge',
+          btnClearReceipt: 'Remove',
+          ocrScanning: 'Scanning amount & details from bank slip / receipt...',
+          ocrFound: 'Detected amounts on slip/receipt (tap to fill amount):',
+          ocrNotFound: 'No clear numbers detected. Please type the amount manually or rescan.',
+          btnRescan: 'Rescan Info',
+          formError: 'Please enter an amount greater than 0 and a description.',
+          btnSubmitAdd: '💾 Save Transaction to Calendar',
+          btnSubmitEdit: '✅ Save Changes',
+          viewReceipt: 'View Slip/Receipt',
+          btnEditTx: 'Edit',
+          btnDeleteTx: 'Delete',
+          receiptDefaultDesc: 'Receipt Item',
+          slipDefaultDesc: 'Bank App Transfer',
+          slipDetectedPrefix: '🏦 Detected Slip Info: ',
+          chartTitle: 'Monthly Income & Expense Visual Summary',
+          chartInLabel: '💰 Monthly Income',
+          chartOutLabel: '💸 Monthly Expense',
+          catBreakdownTitle: 'Expense Breakdown by Category (This Month)',
+          emptyChartText: 'No expenses recorded this month yet. Add entries to see your visual breakdown.',
+          profileModalTitle: '👤 User Profile Settings',
+          btnChooseAvatar: 'Upload / Take Profile Photo',
+          btnRemoveAvatar: 'Remove Photo',
+          profileNameLabel: 'User Name / Nickname',
+          profileNamePlaceholder: 'e.g. Alex, May, Dad',
+          btnSaveProfile: 'Save Profile',
+          receiptModalTitle: 'Receipt Photo',
+          installModalTitle: 'How to Install on Your Phone',
+          installIntro: 'This web app is designed for mobile use. Add it to your Home Screen for instant access and receipt scanning anywhere:',
+          installIosTitle: 'For iOS (iPhone / Safari)',
+          installIosSteps: '<li>Open this page in <strong>Safari</strong></li><li>Tap the <strong>Share</strong> button at the bottom</li><li>Select <strong>"Add to Home Screen"</strong></li>',
+          installAndroidTitle: 'For Android (Chrome)',
+          installAndroidSteps: '<li>Open this page in <strong>Chrome</strong></li><li>Tap the 3-dot menu at the top right</li><li>Select <strong>"Add to Home screen / Install app"</strong></li>',
+          btnOkModal: 'Got it',
+          footerText: 'Personal Daily Accounting for All Ages (Bilingual TH/EN) • Created'
+        }
+      };
+
+      // State
+      const now = new Date();
+      let currentLang = 'th';
+      let currentViewYear = now.getFullYear();
+      let currentViewMonth = now.getMonth();
+      let selectedDateStr = formatDateISO(now);
+      let currentTxType = 'expense';
+      let editingTxId = null;
+      let stagedReceiptDataUrl = null;
+      let stagedReceiptName = '';
+      let detectedOcrNumbers = [];
+      let isOcrRunning = false;
+      let dailyLimit = 300;
+      let exchangeRates = Object.assign({}, DEFAULT_RATES_TO_THB);
+      let transactions = [];
+      let userProfile = { name: '', avatarDataUrl: null };
+      let stagedAvatarDataUrl = null;
+
+      // Load persisted state safely
+      try {
+        const savedLang = localStorage.getItem(STORAGE_KEY_LANG);
+        if (savedLang === 'th' || savedLang === 'en') {
+          currentLang = savedLang;
+        }
+        const savedLimit = localStorage.getItem(STORAGE_KEY_LIMIT);
+        if (savedLimit !== null && !isNaN(parseFloat(savedLimit))) {
+          dailyLimit = Math.max(0, parseFloat(savedLimit));
+        }
+        const savedRates = localStorage.getItem(STORAGE_KEY_RATES);
+        if (savedRates) {
+          const parsedRates = JSON.parse(savedRates);
+          if (parsedRates && typeof parsedRates === 'object') {
+            exchangeRates = Object.assign({}, DEFAULT_RATES_TO_THB, parsedRates);
+          }
+        }
+        const savedTx = localStorage.getItem(STORAGE_KEY_TX);
+        if (savedTx) {
+          const parsed = JSON.parse(savedTx);
+          if (Array.isArray(parsed)) {
+            transactions = parsed;
+          }
+        }
+        const savedProfile = localStorage.getItem(STORAGE_KEY_PROFILE);
+        if (savedProfile) {
+          const parsedProf = JSON.parse(savedProfile);
+          if (parsedProf && typeof parsedProf === 'object') {
+            userProfile = {
+              name: parsedProf.name || '',
+              avatarDataUrl: parsedProf.avatarDataUrl || null
+            };
+          }
+        }
+      } catch (e) {
+        // Ignore storage errors in sandboxed contexts
+      }
+
+      // DOM Elements
+      const langBtnTH = document.getElementById('langBtnTH');
+      const langBtnEN = document.getElementById('langBtnEN');
+      const headerAvatarBox = document.getElementById('headerAvatarBox');
+      const headerUserName = document.getElementById('headerUserName');
+      const bannerAvatarBox = document.getElementById('bannerAvatarBox');
+      const uiGreetingTitle = document.getElementById('uiGreetingTitle');
+      const uiMotivationQuote = document.getElementById('uiMotivationQuote');
+
+      const calendarWeekdays = document.getElementById('calendarWeekdays');
+      const calendarGrid = document.getElementById('calendarGrid');
+      const currentMonthLabel = document.getElementById('currentMonthLabel');
+      const monthIncomeTotal = document.getElementById('monthIncomeTotal');
+      const monthExpenseTotal = document.getElementById('monthExpenseTotal');
+      const selectedDateHeading = document.getElementById('selectedDateHeading');
+      const dailyLimitInput = document.getElementById('dailyLimitInput');
+      const dailyProgressBar = document.getElementById('dailyProgressBar');
+      const dayIncomeText = document.getElementById('dayIncomeText');
+      const dayExpenseText = document.getElementById('dayExpenseText');
+      const dayFrameStatusText = document.getElementById('dayFrameStatusText');
+      const dayTransactionsContainer = document.getElementById('dayTransactionsContainer');
+
+      const formCardContainer = document.getElementById('formCardContainer');
+      const formHeaderIcon = document.getElementById('formHeaderIcon');
+      const editModeBanner = document.getElementById('editModeBanner');
+      const btnCancelEdit = document.getElementById('btnCancelEdit');
+      const transactionForm = document.getElementById('transactionForm');
+      const typeBtnExpense = document.getElementById('typeBtnExpense');
+      const typeBtnIncome = document.getElementById('typeBtnIncome');
+      const txDateInput = document.getElementById('txDateInput');
+      const txAmountInput = document.getElementById('txAmountInput');
+      const txCurrencySelect = document.getElementById('txCurrencySelect');
+      const exchangeRateRow = document.getElementById('exchangeRateRow');
+      const exchangeRateLabelText = document.getElementById('exchangeRateLabelText');
+      const exchangeRateInput = document.getElementById('exchangeRateInput');
+      const convertedPreviewPill = document.getElementById('convertedPreviewPill');
+      const txCategoryInput = document.getElementById('txCategoryInput');
+      const txDescInput = document.getElementById('txDescInput');
+      const slipGalleryInput = document.getElementById('slipGalleryInput');
+      const btnTriggerSlipGallery = document.getElementById('btnTriggerSlipGallery');
+      const receiptFileInput = document.getElementById('receiptFileInput');
+      const btnTriggerCamera = document.getElementById('btnTriggerCamera');
+      const receiptPreviewBox = document.getElementById('receiptPreviewBox');
+      const receiptThumbImg = document.getElementById('receiptThumbImg');
+      const receiptFileName = document.getElementById('receiptFileName');
+      const btnClearReceipt = document.getElementById('btnClearReceipt');
+      const ocrStatusText = document.getElementById('ocrStatusText');
+      const ocrSlipInfoBadge = document.getElementById('ocrSlipInfoBadge');
+      const ocrNumberChips = document.getElementById('ocrNumberChips');
+      const btnRescanOcr = document.getElementById('btnRescanOcr');
+      const formErrorMsg = document.getElementById('formErrorMsg');
+      const uiBtnSubmit = document.getElementById('uiBtnSubmit');
+
+      const chartInAmount = document.getElementById('chartInAmount');
+      const chartOutAmount = document.getElementById('chartOutAmount');
+      const chartInBar = document.getElementById('chartInBar');
+      const chartOutBar = document.getElementById('chartOutBar');
+      const categoryChartContainer = document.getElementById('categoryChartContainer');
+
+      const profileModal = document.getElementById('profileModal');
+      const profileModalAvatarPreview = document.getElementById('profileModalAvatarPreview');
+      const profilePhotoInput = document.getElementById('profilePhotoInput');
+      const profileNameInput = document.getElementById('profileNameInput');
+
+      const receiptModal = document.getElementById('receiptModal');
+      const receiptModalImg = document.getElementById('receiptModalImg');
+      const receiptModalMeta = document.getElementById('receiptModalMeta');
+      const installModal = document.getElementById('installModal');
+
+      // Helpers
+      function t(key) {
+        return I18N[currentLang][key] || key;
+      }
+
+      function formatDateISO(dateObj) {
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function formatDateFull(isoStr) {
+        if (!isoStr) return '';
+        const parts = isoStr.split('-');
+        if (parts.length !== 3) return isoStr;
+        const yNum = parseInt(parts[0], 10);
+        const y = currentLang === 'th' ? yNum + 543 : yNum;
+        const m = parseInt(parts[1], 10) - 1;
+        const d = parseInt(parts[2], 10);
+        return `${d} ${MONTHS[currentLang][m]} ${y}`;
+      }
+
+      function formatCurrency(num, curCode) {
+        const code = curCode || 'THB';
+        const sym = CURRENCY_SYMBOLS[code] || (code + ' ');
+        return sym + Number(num || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
+      function formatCompactTHB(num) {
+        return '฿' + Number(num || 0).toLocaleString('en-US', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        });
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY_TX, JSON.stringify(transactions));
+          localStorage.setItem(STORAGE_KEY_LIMIT, String(dailyLimit));
+          localStorage.setItem(STORAGE_KEY_LANG, currentLang);
+          localStorage.setItem(STORAGE_KEY_RATES, JSON.stringify(exchangeRates));
+          localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(userProfile));
+        } catch (e) {
+          // Best-effort storage
+        }
+      }
+
+      function getCategoryInfo(catVal) {
+        const found = CATEGORIES.find(function (c) {
+          return c.id === catVal || c.th === catVal || c.en === catVal;
+        });
+        return found || CATEGORIES[CATEGORIES.length - 1];
+      }
+
+      function populateCategoryOptions() {
+        const currentVal = txCategoryInput.value;
+        txCategoryInput.innerHTML = '';
+        CATEGORIES.forEach(function (cat) {
+          const opt = document.createElement('option');
+          opt.value = cat.id;
+          opt.textContent = `${cat.icon} ${currentLang === 'th' ? cat.th : cat.en}`;
+          txCategoryInput.appendChild(opt);
+        });
+        if (currentVal && CATEGORIES.some(function (c) { return c.id === currentVal; })) {
+          txCategoryInput.value = currentVal;
+        }
+      }
+
+      // Render User Profile UI
+      function renderUserProfile() {
+        const hasName = userProfile.name && userProfile.name.trim().length > 0;
+        headerUserName.textContent = hasName ? userProfile.name.trim() : t('defaultUserName');
+
+        if (userProfile.avatarDataUrl) {
+          headerAvatarBox.innerHTML = `<img src="${userProfile.avatarDataUrl}" alt="User Avatar">`;
+          bannerAvatarBox.innerHTML = `<img src="${userProfile.avatarDataUrl}" alt="User Avatar">`;
+        } else {
+          headerAvatarBox.textContent = '😊';
+          bannerAvatarBox.textContent = '😊';
+        }
+
+        if (hasName) {
+          uiGreetingTitle.textContent = t('greetingWithName').replace('{NAME}', userProfile.name.trim());
+        } else {
+          uiGreetingTitle.textContent = t('greetingNoName');
+        }
+        uiMotivationQuote.textContent = t('motivationSub');
+      }
+
+      // Update Currency & Exchange Rate UI
+      function updateCurrencyConversionUI() {
+        const cur = txCurrencySelect.value;
+        const rawAmt = parseFloat(txAmountInput.value) || 0;
+        if (cur === 'THB') {
+          exchangeRateRow.classList.remove('is-visible');
+          exchangeRateInput.value = '1';
+          convertedPreviewPill.textContent = `= ${formatCurrency(rawAmt, 'THB')} THB`;
+        } else {
+          exchangeRateRow.classList.add('is-visible');
+          exchangeRateLabelText.textContent = t('rateLabel').replace('{CUR}', cur);
+          const rate = parseFloat(exchangeRateInput.value) || exchangeRates[cur] || 1;
+          const thbAmt = rawAmt * rate;
+          convertedPreviewPill.textContent = `${formatCurrency(rawAmt, cur)} ≈ ${formatCurrency(thbAmt, 'THB')} THB`;
+        }
+      }
+
+      function updateEditModeUI() {
+        if (editingTxId) {
+          formCardContainer.classList.add('is-editing');
+          editModeBanner.classList.add('is-visible');
+          formHeaderIcon.textContent = '✏️';
+          document.getElementById('uiFormTitle').textContent = t('formTitleEdit');
+          uiBtnSubmit.textContent = t('btnSubmitEdit');
+        } else {
+          formCardContainer.classList.remove('is-editing');
+          editModeBanner.classList.remove('is-visible');
+          formHeaderIcon.textContent = '✍️';
+          document.getElementById('uiFormTitle').textContent = t('formTitleAdd');
+          uiBtnSubmit.textContent = t('btnSubmitAdd');
+        }
+      }
+
+      // Apply Language to all static elements
+      function applyLanguage() {
+        document.documentElement.lang = currentLang;
+        langBtnTH.classList.toggle('is-active', currentLang === 'th');
+        langBtnEN.classList.toggle('is-active', currentLang === 'en');
+
+        document.getElementById('uiBrandTitle').textContent = t('brandTitle');
+        document.getElementById('uiBrandSubtitle').textContent = t('brandSubtitle');
+        document.getElementById('uiBtnEditProfile').textContent = t('btnEditProfile');
+        document.getElementById('uiBtnToday').textContent = t('btnToday');
+        document.getElementById('uiBtnInstall').textContent = t('btnInstall');
+        document.getElementById('uiCalendarTitle').textContent = t('calendarTitle');
+        document.getElementById('uiLegendIncome').textContent = t('legendIncome');
+        document.getElementById('uiLegendExpense').textContent = t('legendExpense');
+        document.getElementById('uiLegendOver').textContent = t('legendOver');
+        document.getElementById('uiMonthSummaryPrefix').textContent = t('monthSummaryPrefix');
+        document.getElementById('uiMonthSummaryOut').textContent = t('monthSummaryOut');
+        document.getElementById('uiDailyLimitLabel').textContent = t('dailyLimitLabel');
+        document.getElementById('uiPerDayUnit').textContent = t('perDayUnit');
+        document.getElementById('uiDayInLabel').textContent = t('dayInLabel');
+        document.getElementById('uiDayOutLabel').textContent = t('dayOutLabel');
+
+        document.getElementById('uiEditingNotice').textContent = t('editingNotice');
+        btnCancelEdit.textContent = t('btnCancelEdit');
+        typeBtnExpense.textContent = t('typeExpense');
+        typeBtnIncome.textContent = t('typeIncome');
+        document.getElementById('uiDateLabel').textContent = t('dateLabel');
+        document.getElementById('uiAmountLabel').textContent = t('amountLabel');
+        document.getElementById('uiCurrencyLabel').textContent = t('currencyLabel');
+        document.getElementById('uiCategoryLabel').textContent = t('categoryLabel');
+        document.getElementById('uiDescLabel').textContent = t('descLabel');
+        txDescInput.placeholder = t('descPlaceholder');
+        document.getElementById('uiReceiptLabel').textContent = t('receiptLabel');
+        document.getElementById('uiBtnSlipGallery').textContent = t('btnSlipGallery');
+        document.getElementById('uiBtnCamera').textContent = t('btnCamera');
+        document.getElementById('uiReceiptHint').textContent = t('receiptHint');
+        document.getElementById('uiTapToZoom').textContent = t('tapToZoom');
+        btnClearReceipt.textContent = t('btnClearReceipt');
+        btnRescanOcr.textContent = t('btnRescan');
+        formErrorMsg.textContent = t('formError');
+
+        document.getElementById('uiChartTitle').textContent = t('chartTitle');
+        document.getElementById('uiChartInLabel').textContent = t('chartInLabel');
+        document.getElementById('uiChartOutLabel').textContent = t('chartOutLabel');
+        document.getElementById('uiCatBreakdownTitle').textContent = t('catBreakdownTitle');
+
+        document.getElementById('profileModalTitle').textContent = t('profileModalTitle');
+        document.getElementById('uiBtnChooseAvatar').textContent = t('btnChooseAvatar');
+        document.getElementById('uiBtnRemoveAvatar').textContent = t('btnRemoveAvatar');
+        document.getElementById('uiProfileNameLabel').textContent = t('profileNameLabel');
+        profileNameInput.placeholder = t('profileNamePlaceholder');
+        document.getElementById('btnSaveProfile').textContent = t('btnSaveProfile');
+
+        document.getElementById('receiptModalTitle').textContent = t('receiptModalTitle');
+        document.getElementById('installModalTitle').textContent = t('installModalTitle');
+        document.getElementById('uiInstallIntro').textContent = t('installIntro');
+        document.getElementById('uiInstallIosTitle').textContent = t('installIosTitle');
+        document.getElementById('uiInstallIosSteps').innerHTML = t('installIosSteps');
+        document.getElementById('uiInstallAndroidTitle').textContent = t('installAndroidTitle');
+        document.getElementById('uiInstallAndroidSteps').innerHTML = t('installAndroidSteps');
+        document.getElementById('btnOkInstallModal').textContent = t('btnOkModal');
+        document.getElementById('uiFooterText').textContent = t('footerText');
+
+        // Weekday headers
+        calendarWeekdays.innerHTML = '';
+        WEEKDAYS[currentLang].forEach(function (wd) {
+          const span = document.createElement('span');
+          span.textContent = wd;
+          calendarWeekdays.appendChild(span);
+        });
+
+        populateCategoryOptions();
+        renderUserProfile();
+        updateEditModeUI();
+        updateCurrencyConversionUI();
+        renderOcrPanelState();
+        renderAll();
+      }
+
+      // Compress image so receipt/profile photos stay fast and responsive in memory
+      function compressImageFile(file, maxDim, callback) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            const canvas = document.createElement('canvas');
+            let w = img.width;
+            let h = img.height;
+            if (w > h && w > maxDim) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else if (h > maxDim) {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+            callback(dataUrl);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      // Extract plausible monetary numbers from OCR text (supports Thai bank slips & receipts)
+      function parseNumbersFromOcrText(rawText) {
+        if (!rawText) return [];
+        const matches = rawText.match(/\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})/g) || [];
+        const candidates = [];
+
+        matches.forEach(function (m) {
+          const cleaned = m.replace(/,/g, '');
+          const val = parseFloat(cleaned);
+          // Exclude 0.00 fee lines and long reference IDs / account numbers
+          if (!isNaN(val) && val > 0 && val < 5000000) {
+            const isLikelyYear = !m.includes('.') && ((val >= 1990 && val <= 2035) || (val >= 2540 && val <= 2580));
+            const isLikelyRefCode = !m.includes('.') && cleaned.length >= 6;
+            if (!isLikelyYear && !isLikelyRefCode) {
+              const hasDecimal = m.includes('.');
+              candidates.push({ value: val, hasDecimal: hasDecimal });
+            }
+          }
+        });
+
+        const uniqueMap = {};
+        candidates.forEach(function (c) {
+          const key = c.value.toFixed(2);
+          if (!uniqueMap[key] || c.hasDecimal) {
+            uniqueMap[key] = c;
+          }
+        });
+
+        const sorted = Object.values(uniqueMap).sort(function (a, b) {
+          if (a.hasDecimal !== b.hasDecimal) return a.hasDecimal ? -1 : 1;
+          return b.value - a.value;
+        });
+
+        return sorted.slice(0, 6).map(function (item) {
+          return item.value;
+        });
+      }
+
+      // Detect Thai Bank or Payment App details from slip text
+      function detectBankSlipDetails(rawText) {
+        if (!rawText) return '';
+        const upper = rawText.toUpperCase();
+        const bankPatterns = [
+          { keys: ['KBANK', 'KASIKORN', 'K PLUS', 'KPLUS', 'กสิกร'], th: 'สลิป K PLUS (กสิกรไทย)', en: 'K PLUS (Kasikornbank) Slip' },
+          { keys: ['SCB', 'EASY', 'ไทยพาณิชย์'], th: 'สลิป SCB EASY (ไทยพาณิชย์)', en: 'SCB EASY Slip' },
+          { keys: ['KRUNGTHAI', 'KTB', 'NEXT', 'กรุงไทย'], th: 'สลิป Krungthai NEXT (กรุงไทย)', en: 'Krungthai NEXT Slip' },
+          { keys: ['BBL', 'BANGKOK BANK', 'BUALUANG', 'กรุงเทพ'], th: 'สลิป Bangkok Bank (กรุงเทพ)', en: 'Bangkok Bank Slip' },
+          { keys: ['KMA', 'KRUNGSRI', 'กรุงศรี'], th: 'สลิป KMA (กรุงศรี)', en: 'Krungsri KMA Slip' },
+          { keys: ['TTB', 'TMB', 'ทหารไทยธนชาต'], th: 'สลิป ttb touch', en: 'ttb touch Slip' },
+          { keys: ['GSB', 'MYMO', 'ออมสิน'], th: 'สลิป MyMo (ออมสิน)', en: 'GSB MyMo Slip' },
+          { keys: ['PROMPTPAY', 'พร้อมเพย์'], th: 'โอนเงิน PromptPay (พร้อมเพย์)', en: 'PromptPay Transfer' },
+          { keys: ['TRUEMONEY', 'WALLET'], th: 'สลิป TrueMoney Wallet', en: 'TrueMoney Wallet Slip' }
+        ];
+
+        for (let i = 0; i < bankPatterns.length; i++) {
+          const bp = bankPatterns[i];
+          for (let j = 0; j < bp.keys.length; j++) {
+            if (upper.includes(bp.keys[j])) {
+              return currentLang === 'th' ? bp.th : bp.en;
+            }
+          }
+        }
+        return '';
+      }
+
+      let detectedSlipBankLabel = '';
+
+      function renderOcrPanelState() {
+        ocrNumberChips.innerHTML = '';
+        if (isOcrRunning) {
+          ocrStatusText.textContent = t('ocrScanning');
+          ocrSlipInfoBadge.style.display = 'none';
+          btnRescanOcr.disabled = true;
+          return;
+        }
+        btnRescanOcr.disabled = false;
+
+        if (detectedSlipBankLabel) {
+          ocrSlipInfoBadge.style.display = 'block';
+          ocrSlipInfoBadge.textContent = t('slipDetectedPrefix') + detectedSlipBankLabel;
+        } else {
+          ocrSlipInfoBadge.style.display = 'none';
+        }
+
+        if (detectedOcrNumbers.length > 0) {
+          ocrStatusText.textContent = t('ocrFound');
+          detectedOcrNumbers.forEach(function (num) {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'ocr-chip';
+            chip.textContent = num.toLocaleString('en-US', {
+              minimumFractionDigits: num % 1 !== 0 ? 2 : 0,
+              maximumFractionDigits: 2
+            });
+            chip.addEventListener('click', function () {
+              txAmountInput.value = num;
+              updateCurrencyConversionUI();
+            });
+            ocrNumberChips.appendChild(chip);
+          });
+        } else {
+          ocrStatusText.textContent = t('ocrNotFound');
+        }
+      }
+
+      async function runReceiptOcr(dataUrl) {
+        if (!dataUrl) return;
+        isOcrRunning = true;
+        detectedOcrNumbers = [];
+        detectedSlipBankLabel = '';
+        renderOcrPanelState();
+
+        try {
+          if (window.Tesseract && typeof window.Tesseract.recognize === 'function') {
+            const result = await window.Tesseract.recognize(dataUrl, 'eng');
+            const text = result && result.data && result.data.text ? result.data.text : '';
+            detectedOcrNumbers = parseNumbersFromOcrText(text);
+            detectedSlipBankLabel = detectBankSlipDetails(text);
+
+            if (detectedOcrNumbers.length > 0 && !txAmountInput.value) {
+              txAmountInput.value = detectedOcrNumbers[0];
+              updateCurrencyConversionUI();
+            }
+            if (detectedSlipBankLabel && (!txDescInput.value || txDescInput.value === t('receiptDefaultDesc') || txDescInput.value === t('slipDefaultDesc'))) {
+              txDescInput.value = detectedSlipBankLabel;
+            }
+          }
+        } catch (err) {
+          detectedOcrNumbers = [];
+        } finally {
+          isOcrRunning = false;
+          renderOcrPanelState();
+        }
+      }
+
+      // Render Calendar & Monthly Summary Chart
+      function renderCalendarAndCharts() {
+        const displayYear = currentLang === 'th' ? currentViewYear + 543 : currentViewYear;
+        currentMonthLabel.textContent = `${MONTHS[currentLang][currentViewMonth]} ${displayYear}`;
+
+        const firstDayOfMonth = new Date(currentViewYear, currentViewMonth, 1);
+        const startWeekday = firstDayOfMonth.getDay();
+        const daysInMonth = new Date(currentViewYear, currentViewMonth + 1, 0).getDate();
+
+        const monthPrefix = `${currentViewYear}-${String(currentViewMonth + 1).padStart(2, '0')}-`;
+        const dayMap = {};
+        const catExpenseMap = {};
+        let totalMonthIn = 0;
+        let totalMonthOut = 0;
+
+        transactions.forEach(function (tx) {
+          if (tx.date.startsWith(monthPrefix)) {
+            if (!dayMap[tx.date]) {
+              dayMap[tx.date] = { income: 0, expense: 0 };
+            }
+            if (tx.type === 'income') {
+              dayMap[tx.date].income += tx.amount;
+              totalMonthIn += tx.amount;
+            } else {
+              dayMap[tx.date].expense += tx.amount;
+              totalMonthOut += tx.amount;
+              const catInfo = getCategoryInfo(tx.category);
+              catExpenseMap[catInfo.id] = (catExpenseMap[catInfo.id] || 0) + tx.amount;
+            }
+          }
+        });
+
+        monthIncomeTotal.textContent = formatCurrency(totalMonthIn, 'THB');
+        monthExpenseTotal.textContent = formatCurrency(totalMonthOut, 'THB');
+
+        // Update Monthly Income vs Expense Chart
+        chartInAmount.textContent = formatCurrency(totalMonthIn, 'THB');
+        chartOutAmount.textContent = formatCurrency(totalMonthOut, 'THB');
+        const maxInOut = Math.max(totalMonthIn, totalMonthOut, 1);
+        chartInBar.style.width = totalMonthIn > 0 ? `${Math.round((totalMonthIn / maxInOut) * 100)}%` : '0%';
+        chartOutBar.style.width = totalMonthOut > 0 ? `${Math.round((totalMonthOut / maxInOut) * 100)}%` : '0%';
+
+        // Update Category Breakdown Chart
+        categoryChartContainer.innerHTML = '';
+        const catEntries = Object.keys(catExpenseMap)
+          .map(function (catId) {
+            return { cat: getCategoryInfo(catId), amount: catExpenseMap[catId] };
+          })
+          .sort(function (a, b) {
+            return b.amount - a.amount;
+          });
+
+        if (catEntries.length === 0) {
+          const emptyChart = document.createElement('div');
+          emptyChart.className = 'empty-state';
+          emptyChart.style.padding = 'var(--space-4)';
+          emptyChart.innerHTML = `<span class="empty-state-icon">📈</span><p>${t('emptyChartText')}</p>`;
+          categoryChartContainer.appendChild(emptyChart);
+        } else {
+          const listDiv = document.createElement('div');
+          listDiv.className = 'cat-chart-list';
+          catEntries.forEach(function (entry) {
+            const pct = totalMonthOut > 0 ? Math.round((entry.amount / totalMonthOut) * 100) : 0;
+            const item = document.createElement('div');
+            item.className = 'cat-chart-item';
+            const labelName = currentLang === 'th' ? entry.cat.th : entry.cat.en;
+            item.innerHTML = `
+              <div class="cat-chart-top">
+                <span class="cat-chart-label">${entry.cat.icon} ${labelName}</span>
+                <span class="cat-chart-val">${formatCurrency(entry.amount, 'THB')} (${pct}%)</span>
+              </div>
+              <div class="cat-bar-track">
+                <div class="cat-bar-fill" style="width: ${Math.max(pct, 3)}%; background: ${entry.cat.color};"></div>
+              </div>
+            `;
+            listDiv.appendChild(item);
+          });
+          categoryChartContainer.appendChild(listDiv);
+        }
+
+        // Render Calendar Cells
+        calendarGrid.innerHTML = '';
+        const todayIso = formatDateISO(new Date());
+
+        for (let i = 0; i < startWeekday; i++) {
+          const emptyCell = document.createElement('div');
+          emptyCell.className = 'cal-cell is-outside';
+          emptyCell.setAttribute('aria-hidden', 'true');
+          calendarGrid.appendChild(emptyCell);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const iso = `${currentViewYear}-${String(currentViewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const cell = document.createElement('button');
+          cell.type = 'button';
+          cell.className = 'cal-cell';
+          if (iso === todayIso) cell.classList.add('is-today');
+          if (iso === selectedDateStr) cell.classList.add('is-selected');
+
+          const summary = dayMap[iso] || { income: 0, expense: 0 };
+          const isOverLimit = dailyLimit > 0 && summary.expense > dailyLimit;
+
+          const topDiv = document.createElement('div');
+          topDiv.className = 'cal-top';
+
+          const dayNumSpan = document.createElement('span');
+          dayNumSpan.className = 'cal-day-num';
+          dayNumSpan.textContent = day;
+          topDiv.appendChild(dayNumSpan);
+
+          if (isOverLimit) {
+            const overDot = document.createElement('span');
+            overDot.className = 'cal-dot-over';
+            overDot.title = t('legendOver');
+            topDiv.appendChild(overDot);
+          }
+
+          const amountsDiv = document.createElement('div');
+          amountsDiv.className = 'cal-amounts';
+
+          if (summary.income > 0) {
+            const inPill = document.createElement('span');
+            inPill.className = 'cal-pill cal-pill-in';
+            inPill.textContent = '+' + formatCompactTHB(summary.income);
+            amountsDiv.appendChild(inPill);
+          }
+
+          if (summary.expense > 0) {
+            const outPill = document.createElement('span');
+            outPill.className = 'cal-pill cal-pill-out';
+            outPill.textContent = '-' + formatCompactTHB(summary.expense);
+            amountsDiv.appendChild(outPill);
+          }
+
+          cell.appendChild(topDiv);
+          cell.appendChild(amountsDiv);
+
+          cell.addEventListener('click', function () {
+            selectedDateStr = iso;
+            if (!editingTxId) {
+              txDateInput.value = iso;
+            }
+            renderAll();
+          });
+
+          calendarGrid.appendChild(cell);
+        }
+      }
+
+      // Start Editing a Transaction
+      function startEditTransaction(tx) {
+        editingTxId = tx.id;
+        setTxType(tx.type);
+        txDateInput.value = tx.date;
+        const origCur = tx.originalCurrency || 'THB';
+        txCurrencySelect.value = origCur;
+        const rate = origCur === 'THB' ? 1 : (tx.exchangeRate || exchangeRates[origCur] || 1);
+        exchangeRateInput.value = rate;
+        txAmountInput.value = tx.originalAmount !== undefined ? tx.originalAmount : tx.amount;
+
+        const catInfo = getCategoryInfo(tx.category);
+        txCategoryInput.value = catInfo.id;
+        txDescInput.value = tx.description;
+
+        if (tx.receiptDataUrl) {
+          stagedReceiptDataUrl = tx.receiptDataUrl;
+          receiptThumbImg.src = tx.receiptDataUrl;
+          receiptFileName.textContent = t('viewReceipt');
+          receiptPreviewBox.classList.add('is-visible');
+        } else {
+          stagedReceiptDataUrl = null;
+          receiptPreviewBox.classList.remove('is-visible');
+        }
+
+        formErrorMsg.classList.remove('is-visible');
+        updateCurrencyConversionUI();
+        updateEditModeUI();
+        renderSelectedDay();
+
+        formCardContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function cancelEditTransaction() {
+        editingTxId = null;
+        txAmountInput.value = '';
+        txDescInput.value = '';
+        txDateInput.value = selectedDateStr;
+        stagedReceiptDataUrl = null;
+        stagedReceiptName = '';
+        detectedOcrNumbers = [];
+        receiptFileInput.value = '';
+        receiptPreviewBox.classList.remove('is-visible');
+        formErrorMsg.classList.remove('is-visible');
+        updateCurrencyConversionUI();
+        updateEditModeUI();
+        renderSelectedDay();
+      }
+
+      // Render Selected Day Panel
+      function renderSelectedDay() {
+        selectedDateHeading.textContent = `${t('selectedDatePrefix')}${formatDateFull(selectedDateStr)}`;
+
+        const dayTxs = transactions.filter(function (tx) {
+          return tx.date === selectedDateStr;
+        });
+
+        let dayIn = 0;
+        let dayOut = 0;
+        dayTxs.forEach(function (tx) {
+          if (tx.type === 'income') dayIn += tx.amount;
+          else dayOut += tx.amount;
+        });
+
+        dayIncomeText.textContent = formatCurrency(dayIn, 'THB');
+        dayExpenseText.textContent = formatCurrency(dayOut, 'THB');
+
+        if (dailyLimit > 0) {
+          const pct = Math.min(100, Math.round((dayOut / dailyLimit) * 100));
+          dailyProgressBar.style.width = `${pct}%`;
+          dailyProgressBar.classList.remove('is-warning', 'is-over');
+
+          const diff = dailyLimit - dayOut;
+          if (diff >= 0) {
+            dayFrameStatusText.textContent = `${t('frameRemainPrefix')}${formatCurrency(diff, 'THB')}`;
+            dayFrameStatusText.style.color = 'var(--income)';
+            dayFrameStatusText.style.fontWeight = '600';
+            if (pct >= 80) {
+              dailyProgressBar.classList.add('is-warning');
+            }
+          } else {
+            dayFrameStatusText.textContent = `${t('frameOverPrefix')}${formatCurrency(Math.abs(diff), 'THB')}`;
+            dayFrameStatusText.style.color = 'var(--expense)';
+            dayFrameStatusText.style.fontWeight = '700';
+            dailyProgressBar.classList.add('is-over');
+          }
+        } else {
+          dailyProgressBar.style.width = '0%';
+          dayFrameStatusText.textContent = t('frameNone');
+          dayFrameStatusText.style.color = 'var(--muted)';
+        }
+
+        dayTransactionsContainer.innerHTML = '';
+
+        if (dayTxs.length === 0) {
+          const emptyDiv = document.createElement('div');
+          emptyDiv.className = 'empty-state';
+          emptyDiv.innerHTML = `
+            <span class="empty-state-icon">🌱</span>
+            <p>${t('emptyDayTitle')}</p>
+            <p style="font-size: 0.8rem; margin-top: 4px;">${t('emptyDaySub')}</p>
+          `;
+          dayTransactionsContainer.appendChild(emptyDiv);
+          return;
+        }
+
+        const listEl = document.createElement('div');
+        listEl.className = 'tx-list';
+
+        dayTxs.forEach(function (tx) {
+          const item = document.createElement('div');
+          item.className = 'tx-item' + (tx.id === editingTxId ? ' is-being-edited' : '');
+
+          const isIncome = tx.type === 'income';
+          const sign = isIncome ? '+' : '-';
+          const catInfo = getCategoryInfo(tx.category);
+
+          const leftDiv = document.createElement('div');
+          leftDiv.className = 'tx-left';
+
+          const badge = document.createElement('div');
+          badge.className = 'tx-badge ' + (isIncome ? 'is-income' : 'is-expense');
+          badge.textContent = catInfo.icon;
+
+          const detailsDiv = document.createElement('div');
+          detailsDiv.className = 'tx-details';
+
+          const descP = document.createElement('p');
+          descP.className = 'tx-desc';
+          descP.textContent = tx.description;
+
+          const metaDiv = document.createElement('div');
+          metaDiv.className = 'tx-meta';
+          const catSpan = document.createElement('span');
+          catSpan.textContent = currentLang === 'th' ? catInfo.th : catInfo.en;
+          metaDiv.appendChild(catSpan);
+
+          if (tx.originalCurrency && tx.originalCurrency !== 'THB' && tx.originalAmount) {
+            const fxTag = document.createElement('span');
+            fxTag.className = 'tx-fx-tag';
+            fxTag.textContent = `${formatCurrency(tx.originalAmount, tx.originalCurrency)} ${tx.originalCurrency} (@${tx.exchangeRate})`;
+            metaDiv.appendChild(fxTag);
+          }
+
+          if (tx.receiptDataUrl) {
+            const viewReceiptBtn = document.createElement('button');
+            viewReceiptBtn.type = 'button';
+            viewReceiptBtn.className = 'tx-receipt-btn';
+            viewReceiptBtn.innerHTML = `🧾 ${t('viewReceipt')}`;
+            viewReceiptBtn.addEventListener('click', function () {
+              openReceiptModal(tx);
+            });
+            metaDiv.appendChild(viewReceiptBtn);
+          }
+
+          detailsDiv.appendChild(descP);
+          detailsDiv.appendChild(metaDiv);
+          leftDiv.appendChild(badge);
+          leftDiv.appendChild(detailsDiv);
+
+          const rightDiv = document.createElement('div');
+          rightDiv.className = 'tx-right';
+
+          const amountSpan = document.createElement('span');
+          amountSpan.className = 'tx-amount ' + (isIncome ? 'text-income' : 'text-expense');
+          amountSpan.textContent = sign + formatCurrency(tx.amount, 'THB');
+
+          // Edit button
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'btn-icon-action edit-action';
+          editBtn.title = t('btnEditTx');
+          editBtn.setAttribute('aria-label', t('btnEditTx'));
+          editBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          `;
+          editBtn.addEventListener('click', function () {
+            startEditTransaction(tx);
+          });
+
+          // Delete button
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className = 'btn-icon-action delete-action';
+          delBtn.title = t('btnDeleteTx');
+          delBtn.setAttribute('aria-label', t('btnDeleteTx'));
+          delBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          `;
+          delBtn.addEventListener('click', function () {
+            if (editingTxId === tx.id) {
+              cancelEditTransaction();
+            }
+            transactions = transactions.filter(function (item) {
+              return item.id !== tx.id;
+            });
+            saveState();
+            renderAll();
+          });
+
+          rightDiv.appendChild(amountSpan);
+          rightDiv.appendChild(editBtn);
+          rightDiv.appendChild(delBtn);
+
+          item.appendChild(leftDiv);
+          item.appendChild(rightDiv);
+          listEl.appendChild(item);
+        });
+
+        dayTransactionsContainer.appendChild(listEl);
+      }
+
+      function renderAll() {
+        renderCalendarAndCharts();
+        renderSelectedDay();
+      }
+
+      // Event Listeners: Language Switch
+      langBtnTH.addEventListener('click', function () {
+        currentLang = 'th';
+        saveState();
+        applyLanguage();
+      });
+
+      langBtnEN.addEventListener('click', function () {
+        currentLang = 'en';
+        saveState();
+        applyLanguage();
+      });
+
+      // Calendar Month Navigation
+      document.getElementById('btnPrevMonth').addEventListener('click', function () {
+        currentViewMonth--;
+        if (currentViewMonth < 0) {
+          currentViewMonth = 11;
+          currentViewYear--;
+        }
+        renderCalendarAndCharts();
+      });
+
+      document.getElementById('btnNextMonth').addEventListener('click', function () {
+        currentViewMonth++;
+        if (currentViewMonth > 11) {
+          currentViewMonth = 0;
+          currentViewYear++;
+        }
+        renderCalendarAndCharts();
+      });
+
+      document.getElementById('btnToday').addEventListener('click', function () {
+        const today = new Date();
+        currentViewYear = today.getFullYear();
+        currentViewMonth = today.getMonth();
+        selectedDateStr = formatDateISO(today);
+        if (!editingTxId) {
+          txDateInput.value = selectedDateStr;
+        }
+        renderAll();
+      });
+
+      dailyLimitInput.value = dailyLimit;
+      dailyLimitInput.addEventListener('input', function () {
+        const val = parseFloat(dailyLimitInput.value);
+        dailyLimit = isNaN(val) ? 0 : Math.max(0, val);
+        saveState();
+        renderAll();
+      });
+
+      // Type Switcher
+      function setTxType(type) {
+        currentTxType = type;
+        if (type === 'expense') {
+          typeBtnExpense.className = 'type-btn active-expense';
+          typeBtnIncome.className = 'type-btn';
+        } else {
+          typeBtnExpense.className = 'type-btn';
+          typeBtnIncome.className = 'type-btn active-income';
+          if (!editingTxId) {
+            txCategoryInput.value = 'salary';
+          }
+        }
+      }
+
+      typeBtnExpense.addEventListener('click', function () {
+        setTxType('expense');
+      });
+      typeBtnIncome.addEventListener('click', function () {
+        setTxType('income');
+      });
+
+      btnCancelEdit.addEventListener('click', function () {
+        cancelEditTransaction();
+      });
+
+      // Currency & Amount listeners
+      txCurrencySelect.addEventListener('change', function () {
+        const cur = txCurrencySelect.value;
+        exchangeRateInput.value = exchangeRates[cur] || 1;
+        updateCurrencyConversionUI();
+      });
+
+      exchangeRateInput.addEventListener('input', function () {
+        const cur = txCurrencySelect.value;
+        const r = parseFloat(exchangeRateInput.value);
+        if (!isNaN(r) && r > 0) {
+          exchangeRates[cur] = r;
+          saveState();
+        }
+        updateCurrencyConversionUI();
+      });
+
+      txAmountInput.addEventListener('input', function () {
+        updateCurrencyConversionUI();
+      });
+
+      // Date input syncs with selected date
+      txDateInput.value = selectedDateStr;
+      txDateInput.addEventListener('change', function () {
+        if (txDateInput.value) {
+          selectedDateStr = txDateInput.value;
+          const parts = selectedDateStr.split('-');
+          if (parts.length === 3) {
+            currentViewYear = parseInt(parts[0], 10);
+            currentViewMonth = parseInt(parts[1], 10) - 1;
+          }
+          renderAll();
+        }
+      });
+
+      // Bank Slip Gallery Upload & Camera Receipt Upload + Automatic OCR
+      function handleSlipOrReceiptFile(file, isFromSlipGallery) {
+        if (!file) return;
+        stagedReceiptName = file.name || (isFromSlipGallery ? 'bank-slip.jpg' : 'receipt.jpg');
+        compressImageFile(file, 1100, function (dataUrl) {
+          stagedReceiptDataUrl = dataUrl;
+          receiptThumbImg.src = dataUrl;
+          receiptFileName.textContent = stagedReceiptName;
+          receiptPreviewBox.classList.add('is-visible');
+          if (!txDescInput.value.trim()) {
+            txDescInput.value = isFromSlipGallery ? t('slipDefaultDesc') : t('receiptDefaultDesc');
+          }
+          runReceiptOcr(dataUrl);
+        });
+      }
+
+      btnTriggerSlipGallery.addEventListener('click', function () {
+        slipGalleryInput.click();
+      });
+
+      slipGalleryInput.addEventListener('change', function (e) {
+        const file = e.target.files && e.target.files[0];
+        handleSlipOrReceiptFile(file, true);
+      });
+
+      btnTriggerCamera.addEventListener('click', function () {
+        receiptFileInput.click();
+      });
+
+      receiptFileInput.addEventListener('change', function (e) {
+        const file = e.target.files && e.target.files[0];
+        handleSlipOrReceiptFile(file, false);
+      });
+
+      btnRescanOcr.addEventListener('click', function () {
+        if (stagedReceiptDataUrl) {
+          runReceiptOcr(stagedReceiptDataUrl);
+        }
+      });
+
+      receiptThumbImg.addEventListener('click', function () {
+        if (stagedReceiptDataUrl) {
+          openReceiptModal({
+            description: txDescInput.value || t('receiptDefaultDesc'),
+            amount: parseFloat(txAmountInput.value) || 0,
+            date: txDateInput.value,
+            receiptDataUrl: stagedReceiptDataUrl
+          });
+        }
+      });
+
+      btnClearReceipt.addEventListener('click', function () {
+        stagedReceiptDataUrl = null;
+        stagedReceiptName = '';
+        detectedOcrNumbers = [];
+        detectedSlipBankLabel = '';
+        slipGalleryInput.value = '';
+        receiptFileInput.value = '';
+        receiptPreviewBox.classList.remove('is-visible');
+      });
+
+      // Submit Transaction (Add or Update)
+      transactionForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const rawAmount = parseFloat(txAmountInput.value);
+        const desc = txDescInput.value.trim();
+        const dateVal = txDateInput.value || selectedDateStr;
+        const curCode = txCurrencySelect.value || 'THB';
+        const rate = curCode === 'THB' ? 1 : (parseFloat(exchangeRateInput.value) || exchangeRates[curCode] || 1);
+
+        if (isNaN(rawAmount) || rawAmount <= 0 || !desc || isNaN(rate) || rate <= 0) {
+          formErrorMsg.classList.add('is-visible');
+          return;
+        }
+        formErrorMsg.classList.remove('is-visible');
+
+        const amountInTHB = Math.round(rawAmount * rate * 100) / 100;
+
+        if (editingTxId) {
+          transactions = transactions.map(function (item) {
+            if (item.id === editingTxId) {
+              return Object.assign({}, item, {
+                date: dateVal,
+                type: currentTxType,
+                amount: amountInTHB,
+                originalAmount: rawAmount,
+                originalCurrency: curCode,
+                exchangeRate: rate,
+                category: txCategoryInput.value,
+                description: desc,
+                receiptDataUrl: stagedReceiptDataUrl
+              });
+            }
+            return item;
+          });
+          editingTxId = null;
+          updateEditModeUI();
+        } else {
+          const newTx = {
+            id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+            date: dateVal,
+            type: currentTxType,
+            amount: amountInTHB,
+            originalAmount: rawAmount,
+            originalCurrency: curCode,
+            exchangeRate: rate,
+            category: txCategoryInput.value,
+            description: desc,
+            receiptDataUrl: stagedReceiptDataUrl
+          };
+          transactions.unshift(newTx);
+        }
+
+        selectedDateStr = dateVal;
+        const parts = dateVal.split('-');
+        if (parts.length === 3) {
+          currentViewYear = parseInt(parts[0], 10);
+          currentViewMonth = parseInt(parts[1], 10) - 1;
+        }
+
+        // Reset form fields
+        txAmountInput.value = '';
+        txDescInput.value = '';
+        stagedReceiptDataUrl = null;
+        stagedReceiptName = '';
+        detectedOcrNumbers = [];
+        receiptFileInput.value = '';
+        receiptPreviewBox.classList.remove('is-visible');
+        updateCurrencyConversionUI();
+
+        saveState();
+        renderAll();
+      });
+
+      // User Profile Modal Logic
+      function openProfileModal() {
+        profileNameInput.value = userProfile.name || '';
+        stagedAvatarDataUrl = userProfile.avatarDataUrl || null;
+        updateProfileModalPreview();
+        profileModal.classList.add('is-open');
+      }
+
+      function updateProfileModalPreview() {
+        if (stagedAvatarDataUrl) {
+          profileModalAvatarPreview.innerHTML = `<img src="${stagedAvatarDataUrl}" alt="Avatar Preview">`;
+        } else {
+          profileModalAvatarPreview.textContent = '😊';
+        }
+      }
+
+      document.getElementById('btnOpenProfile').addEventListener('click', openProfileModal);
+      document.getElementById('btnEditProfileBanner').addEventListener('click', openProfileModal);
+      bannerAvatarBox.addEventListener('click', openProfileModal);
+
+      document.getElementById('btnCloseProfileModal').addEventListener('click', function () {
+        profileModal.classList.remove('is-open');
+      });
+
+      profileModal.addEventListener('click', function (e) {
+        if (e.target === profileModal) profileModal.classList.remove('is-open');
+      });
+
+      document.getElementById('btnChooseProfilePhoto').addEventListener('click', function () {
+        profilePhotoInput.click();
+      });
+
+      profilePhotoInput.addEventListener('change', function (e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        compressImageFile(file, 320, function (dataUrl) {
+          stagedAvatarDataUrl = dataUrl;
+          updateProfileModalPreview();
+        });
+      });
+
+      document.getElementById('btnRemoveProfilePhoto').addEventListener('click', function () {
+        stagedAvatarDataUrl = null;
+        profilePhotoInput.value = '';
+        updateProfileModalPreview();
+      });
+
+      document.getElementById('btnSaveProfile').addEventListener('click', function () {
+        userProfile.name = profileNameInput.value.trim();
+        userProfile.avatarDataUrl = stagedAvatarDataUrl;
+        saveState();
+        renderUserProfile();
+        profileModal.classList.remove('is-open');
+      });
+
+      // Receipt & Install Modals
+      function openReceiptModal(tx) {
+        receiptModalImg.src = tx.receiptDataUrl;
+        receiptModalMeta.textContent = `${tx.description} • ${formatCurrency(tx.amount, 'THB')} (${formatDateFull(tx.date)})`;
+        receiptModal.classList.add('is-open');
+      }
+
+      document.getElementById('btnCloseReceiptModal').addEventListener('click', function () {
+        receiptModal.classList.remove('is-open');
+      });
+
+      receiptModal.addEventListener('click', function (e) {
+        if (e.target === receiptModal) receiptModal.classList.remove('is-open');
+      });
+
+      document.getElementById('btnInstallGuide').addEventListener('click', function () {
+        installModal.classList.add('is-open');
+      });
+      document.getElementById('btnCloseInstallModal').addEventListener('click', function () {
+        installModal.classList.remove('is-open');
+      });
+      document.getElementById('btnOkInstallModal').addEventListener('click', function () {
+        installModal.classList.remove('is-open');
+      });
+      installModal.addEventListener('click', function (e) {
+        if (e.target === installModal) installModal.classList.remove('is-open');
+      });
+
+      // Initial render
+      applyLanguage();
+    })();
+  </script>
+</body>
+</html>
